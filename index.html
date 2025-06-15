@@ -20,13 +20,15 @@
             --accent-red: #c70039;
             --accent-green: #00b377;
             --accent-blue: #00aaff;
-            --current-accent: var(--accent-purple); /* Default accent color */
+            --accent-teal: #00f5d4;
+            --current-accent: var(--accent-teal); /* Default accent color */
         }
         
         body { font-family: 'Cinzel', serif; background-color: var(--bg-dark-void); background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0); background-size: 40px 40px; color: var(--text-luminous); margin: 0; padding: 1.5rem; }
         .container { max-width: 1200px; margin: auto; background-color: rgba(26, 20, 51, 0.8); backdrop-filter: blur(5px); padding: 2rem; border-radius: 15px; border: 2px solid var(--current-accent); box-shadow: 0 0 30px var(--current-accent); transition: border-color 0.3s, box-shadow 0.3s; }
         
         /* Tab-specific Accent Colors */
+        .container.tab-0-active { --current-accent: var(--accent-teal); }
         .container.tab-1-active { --current-accent: var(--accent-purple); }
         .container.tab-2-active { --current-accent: var(--accent-red); }
         .container.tab-3-active { --current-accent: var(--accent-blue); }
@@ -35,13 +37,27 @@
         h2 { font-family: 'MedievalSharp', cursive; font-size: 2rem; color: var(--text-luminous); margin: 2rem 0 1rem 0; text-align: center; border-bottom: 1px solid var(--current-accent); padding-bottom: 0.5rem; }
         
         /* Tab Styles */
-        .tab-navigation { display: flex; border-bottom: 2px solid var(--current-accent); margin-bottom: 1.5rem; }
+        .tab-navigation { display: flex; flex-wrap: wrap; border-bottom: 2px solid var(--current-accent); margin-bottom: 1.5rem; }
         .tab-button { background: none; border: none; color: var(--text-normal); padding: 10px 20px; font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; }
         .tab-button.active { color: var(--accent-gold); border-bottom-color: var(--accent-gold); }
         .tab-button:hover { color: var(--text-luminous); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Welcome Page Styles */
+        .welcome-page { text-align: center; padding: 1rem 0; }
+        .welcome-page h2 { border-bottom: none; margin-top: 0; color: var(--accent-teal); }
+        .welcome-page p.intro { font-size: 1.2rem; max-width: 800px; margin: 0 auto 3rem auto; line-height: 1.7; color: var(--text-normal); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+        .feature-box { background-color: var(--bg-light-void); padding: 2rem; border-radius: 10px; border: 1px solid var(--current-accent); text-align: center; transition: all 0.3s; }
+        .feature-box:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0, 245, 212, 0.2); }
+        .feature-box h3 { font-family: 'MedievalSharp', cursive; font-size: 1.8rem; margin-top: 0; margin-bottom: 1rem; color: var(--text-luminous); }
+        .feature-box .feature-icon { margin-bottom: 1rem; }
+        .feature-box .feature-icon svg { width: 48px; height: 48px; stroke: var(--current-accent); stroke-width: 1.5; fill: none; }
+        .feature-box p { color: var(--text-normal); line-height: 1.6; margin-bottom: 1.5rem; }
+        .go-to-tab-btn { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; padding: 10px 25px; border-radius: 5px; cursor: pointer; background: transparent; transition: all 0.2s; border: 2px solid var(--current-accent); color: var(--current-accent); text-transform: uppercase; }
+        .go-to-tab-btn:hover { background-color: var(--current-accent); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--current-accent); }
 
         /* Preset Styles */
         .preset-manager { background-color: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-top: 1rem; display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -164,16 +180,53 @@
     </style>
 </head>
 <body>
-    <div class="container tab-1-active">
+    <div class="container tab-0-active">
         <h1>Lawneys Crystal Ball</h1>
 
         <nav class="tab-navigation">
-            <button class="tab-button active" data-tab="tab-1">Dice Playground</button>
+            <button class="tab-button active" data-tab="tab-0">Welcome</button>
+            <button class="tab-button" data-tab="tab-1">Dice Playground</button>
             <button class="tab-button" data-tab="tab-2">Attack Roll Calculator</button>
             <button class="tab-button" data-tab="tab-3">Saving Throw Calculator</button>
         </nav>
 
-        <div id="tab-1" class="tab-content active">
+        <div id="tab-0" class="tab-content active">
+            <div class="welcome-page">
+                <h2>Your D&D Probability Oracle</h2>
+                <p class="intro">
+                    Whether you're a Dungeon Master crafting the next great encounter or a player optimizing your build, the Crystal Ball offers a glimpse into the myriad futures of your dice rolls. Analyze, simulate, and master the odds.
+                </p>
+                <div class="features-grid">
+                    <div class="feature-box">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 32 32"><path d="M16 2 L30 11 L24 29 L8 29 L2 11 Z"></path></svg>
+                        </div>
+                        <h3>Dice Playground</h3>
+                        <p>Build any dice combination imaginable. Experiment with advantage, drop-lowest mechanics, and see the full probability distribution before you roll.</p>
+                        <button class="go-to-tab-btn" data-target-tab="tab-1">Roll the Bones</button>
+                    </div>
+                    <div class="feature-box">
+                         <div class="feature-icon">
+                            <svg viewBox="0 0 32 32"><path d="M16 3 L30 16 L16 29 L2 16 Z"></path></svg>
+                        </div>
+                        <h3>Attack Calculator</h3>
+                        <p>Calculate your Average Damage Per Round (ADPR) against any target AC. Factor in multiple attacks, critical hits, and special feats.</p>
+                        <button class="go-to-tab-btn" data-target-tab="tab-2">Analyze Attacks</button>
+                    </div>
+                    <div class="feature-box">
+                         <div class="feature-icon">
+                             <svg viewBox="0 0 32 32"><path d="M16 2 L28 10 L28 22 L16 30 L4 22 L4 10 Z"></path></svg>
+                        </div>
+                        <h3>Saving Throw Calculator</h3>
+                        <p>Determine the average damage of your spells against single or multiple targets. Account for different save outcomes like half or no damage.</p>
+                        <button class="go-to-tab-btn" data-target-tab="tab-3">Calculate Spells</button>
+                    </div>
+                </div>
+                 <p class="intro" style="font-size: 1.1rem; margin-bottom: 1rem;">The future is not yet written. Choose your tool and begin your divination.</p>
+            </div>
+        </div>
+
+        <div id="tab-1" class="tab-content">
             <div class="preset-manager" data-tab-id="tab-1">
                 <div class="preset-controls">
                     <label for="playground-presets">Presets:</label>
@@ -392,7 +445,8 @@
         ['roll-builder', 'playground-future-button', 'playground-clear-button', 'playground-freeze-button', 'result-total', 'result-status', 'result-details', 
          'playground-chart-container', 'playground-chart-info', 'adpr-chart-container', 'adpr-chart-info', 'save-chart-container', 'save-chart-info',
          'attack-future-button', 'attack-freeze-button', 'attack-clear-button', 'attack-sim-result',
-         'save-future-button', 'save-freeze-button', 'save-clear-button', 'save-sim-result'
+         'save-future-button', 'save-freeze-button', 'save-clear-button', 'save-sim-result',
+         'tab-0' // Add welcome tab to UI object
         ].forEach(id => ui[id.replace(/-/g, '_')] = document.getElementById(id));
         
         // --- INITIALIZATION ---
@@ -427,6 +481,17 @@
                 }
             });
             
+            // Event listener for buttons on the Welcome tab
+            ui.tab_0.addEventListener('click', (e) => {
+                if (e.target.classList.contains('go-to-tab-btn')) {
+                    const targetTabId = e.target.dataset.targetTab;
+                    const targetTabButton = document.querySelector(`.tab-button[data-tab="${targetTabId}"]`);
+                    if (targetTabButton) {
+                        targetTabButton.click();
+                    }
+                }
+            });
+
             document.querySelectorAll('.preset-manager').forEach(manager => {
                 manager.querySelector('.btn-save').addEventListener('click', savePreset);
                 manager.querySelector('.btn-delete').addEventListener('click', deleteSelectedPreset);
@@ -485,7 +550,7 @@
         // --- PERSISTENCE & PRESET FUNCTIONS ---
         function saveState() {
             const state = {
-                activeTab: document.querySelector('.tab-content.active').id,
+                activeTab: document.querySelector('.tab-content.active').id || 'tab-0',
                 playground: playgroundState,
                 attack: {
                     'attack-bonus': document.getElementById('attack-bonus').value,
@@ -548,7 +613,11 @@
                     }
                 }
                 
-                document.querySelector(`.tab-button[data-tab="${state.activeTab}"]`).click();
+                const tabToLoad = state.activeTab || 'tab-0';
+                const buttonToClick = document.querySelector(`.tab-button[data-tab="${tabToLoad}"]`);
+                if (buttonToClick) {
+                   buttonToClick.click();
+                }
 
             } catch (e) {
                 console.error("Failed to load saved state:", e);
@@ -781,7 +850,7 @@
         
         function initializeDicePlayground() { diceTypes.forEach(s => createDieControl(`d${s}`)); createDieControl('meta'); syncUiToState(); updatePlaygroundChart(); }
         function createDieControl(key) { const isMeta = key === 'meta'; playgroundState[key] = isMeta ? { value: 0, dc: 0 } : { count: 0, dropLow: 0, dropHigh: 0 }; const label = isMeta ? "Bonuses" : `D${key.substring(1)}`; const icon = diceIcons[isMeta ? 'meta' : parseInt(key.substring(1))]; const metaControlsHTML = `<div class="control-row"><span>Modifier</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="value" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span>DC</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dc" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div>`; const dieControlsHTML = `<div class="control-row"><span>Count</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="count" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span class="label-drop-low">Drop Lowest</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dropLow" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span class="label-drop-high">Drop Highest</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dropHigh" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div>`; ui.roll_builder.insertAdjacentHTML('beforeend', `<div class="die-control" data-key="${key}"><div class="die-header">${icon}<span class="die-label">${label}</span></div><div class="controls-wrapper">${isMeta ? metaControlsHTML : dieControlsHTML}</div></div>`); }
-        function getSingleRollResult(withDetails = false) { let grandTotal = 0; const detailParts = []; for (const key in playgroundState) { if (key === 'meta' || playgroundState[key].count === 0) continue; const { count, dropLow, dropHigh } = playgroundState[key]; const sides = parseInt(key.substring(1)); const isNegative = count < 0; const rollCount = Math.abs(count); const keptCount = rollCount - dropLow - dropHigh; if (keptCount <= 0) { if (withDetails) detailParts.push(`<b>${count}D${sides}</b>: All dice dropped!`); continue; } const rolls = Array.from({ length: rollCount }, () => Math.floor(Math.random() * sides) + 1); const keptRolls = (dropLow > 0 || dropHigh > 0) ? [...rolls].sort((a,b)=>a-b).slice(dropLow, rollCount - dropHigh) : rolls; let subTotal = keptRolls.reduce((sum, roll) => sum + roll, 0); if (isNegative) subTotal *= -1; grandTotal += subTotal; if (withDetails) { let detail = `<b>${count}D${sides}</b>: [${rolls.join(', ')}]`; if (dropLow > 0 || dropHigh > 0) { detail += ` âž” Kept [${keptRolls.join(', ')}]`; } detail += ` = ${subTotal}`; detailParts.push(detail); } } grandTotal += playgroundState.meta.value; if (withDetails) { if (playgroundState.meta.value !== 0) detailParts.push(`<b>Modifier</b>: ${playgroundState.meta.value > 0 ? '+' : ''}${playgroundState.meta.value}`); return { grandTotal, detailParts }; } return grandTotal; }
+        function getSingleRollResult(withDetails = false) { let grandTotal = 0; const detailParts = []; for (const key in playgroundState) { if (key === 'meta' || playgroundState[key].count === 0) continue; const { count, dropLow, dropHigh } = playgroundState[key]; const sides = parseInt(key.substring(1)); const isNegative = count < 0; const rollCount = Math.abs(count); const keptCount = rollCount - dropLow - dropHigh; if (keptCount <= 0) { if (withDetails) detailParts.push(`<b>${count}D${sides}</b>: All dice dropped!`); continue; } const rolls = Array.from({ length: rollCount }, () => Math.floor(Math.random() * sides) + 1); const keptRolls = (dropLow > 0 || dropHigh > 0) ? [...rolls].sort((a,b)=>a-b).slice(dropLow, rollCount - dropHigh) : rolls; let subTotal = keptRolls.reduce((sum, roll) => sum + roll, 0); if (isNegative) subTotal *= -1; grandTotal += subTotal; if (withDetails) { let detail = `<b>${count}D${sides}</b>: [${rolls.join(', ')}]`; if (dropLow > 0 || dropHigh > 0) { detail += ` ➔ Kept [${keptRolls.join(', ')}]`; } detail += ` = ${subTotal}`; detailParts.push(detail); } } grandTotal += playgroundState.meta.value; if (withDetails) { if (playgroundState.meta.value !== 0) detailParts.push(`<b>Modifier</b>: ${playgroundState.meta.value > 0 ? '+' : ''}${playgroundState.meta.value}`); return { grandTotal, detailParts }; } return grandTotal; }
         function handleRoll() { const { grandTotal, detailParts } = getSingleRollResult(true); if (detailParts.length === 0 && playgroundState.meta.value === 0) { ui.result_total.textContent = '0'; ui.result_details.innerHTML = 'Nothing to roll!'; ui.result_status.innerHTML = ''; } else { ui.result_total.textContent = grandTotal; ui.result_details.innerHTML = detailParts.join('<br>'); } ui.result_total.classList.remove('placeholder'); const dc = playgroundState.meta.dc; if (dc > 0) { if (grandTotal >= dc) { ui.result_status.innerHTML = `<span class="success">Success!</span>`; } else { ui.result_status.innerHTML = `<span class="failure">Failure</span>`; } } else { ui.result_status.innerHTML = ''; } simulationResult.playground = grandTotal; updatePlaygroundChart(); }
         function updatePlaygroundChart() {
             ui.playground_chart_container.innerHTML = `<p class="chart-message">Consulting the ether...</p>`;
@@ -931,8 +1000,8 @@
             for (let i = 0; i < params.numAttacks; i++) {
                 let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
                 let finalRoll = d20roll1; let rollDetail = `d20: ${d20roll1}`;
-                if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]âž”${finalRoll}`; }
-                if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]âž”${finalRoll}`; }
+                if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
+                if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
                 
                 let attackResult; let damage = 0;
                 if (finalRoll === 1) { attackResult = `<span class="failure">Crit Miss!</span> (0 dmg)`; damage = 0; }
@@ -945,7 +1014,7 @@
                     attackResult = `<span class="success">Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
                 } else { attackResult = `<span class="failure">Miss!</span> (0 dmg)`; damage = 0; }
                 
-                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} âž” ${attackResult}`);
+                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} ➔ ${attackResult}`);
                 grandTotalDamage += damage;
             }
 
@@ -1054,17 +1123,17 @@
             for (let i = 0; i < numTargets; i++) {
                 let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
                 let finalRoll = d20roll1; let rollDetail = `d20 Roll: ${d20roll1}`;
-                if (advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20 (Adv): [${d20roll1}, ${d20roll2}] âž” ${finalRoll}`; }
-                if (advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20 (Dis): [${d20roll1}, ${d20roll2}] âž” ${finalRoll}`; }
+                if (advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20 (Adv): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
+                if (advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20 (Dis): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
                 
                 const { total: fullDmg, detail: dmgDetail } = getDiceRoll({groups, mod});
                 let resultText; let damageTaken = 0;
                 if (finalRoll + saveBonus >= saveDC) {
                     damageTaken = Math.floor(fullDmg * saveOutcome);
-                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) âž” <span class="success">Success!</span> Damage: ${fullDmg}*${saveOutcome} = ${damageTaken}.`;
+                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) ➔ <span class="success">Success!</span> Damage: ${fullDmg}*${saveOutcome} = ${damageTaken}.`;
                 } else {
                     damageTaken = fullDmg;
-                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) âž” <span class="failure">Failure!</span> Damage: ${dmgDetail} = ${damageTaken}.`;
+                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) ➔ <span class="failure">Failure!</span> Damage: ${dmgDetail} = ${damageTaken}.`;
                 }
                 resultParts.push(resultText);
                 grandTotalDamage += damageTaken;

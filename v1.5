@@ -48,6 +48,8 @@
         .preset-controls, .preset-save-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
         .preset-manager label { font-weight: 700; }
         .preset-manager select { font-family: 'Cinzel', serif; font-size: 1rem; background-color: var(--bg-dark-void); border: 1px solid var(--current-accent); color: var(--text-luminous); padding: 8px; border-radius: 4px; }
+        .preset-manager optgroup { font-family: 'Cinzel', serif; font-style: italic; background-color: var(--bg-light-void); }
+        .preset-manager option { font-style: normal; }
         .preset-name-input { font-family: 'Cinzel', serif; font-size: 1rem; background-color: var(--bg-dark-void); border: 1px solid var(--current-accent); color: var(--text-luminous); padding: 8px; border-radius: 4px; width: 200px; transition: border-color 0.2s, box-shadow 0.2s; }
         .preset-name-input.invalid { border-color: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
         .preset-manager button { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; padding: 8px 15px; border-radius: 5px; cursor: pointer; background: transparent; transition: all 0.2s; border: 1px solid; }
@@ -148,9 +150,12 @@
         .frozen-subtitle-text { fill: var(--accent-gold); font-weight: bold; }
 
         /* Footer Styles */
-        .footer-link { display: block; text-align: center; margin-top: 2rem; }
+        .footer-link { display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap; text-align: center; margin-top: 2rem; }
+        .footer-label { color: var(--text-normal); font-family: 'MedievalSharp', cursive; font-size: 1.2rem; }
         .footer-link a { color: var(--text-normal); text-decoration: none; border: 1px solid var(--text-normal); padding: 8px 15px; border-radius: 5px; transition: all 0.2s; }
         .footer-link a:hover { color: var(--bg-dark-void); background-color: var(--text-normal); }
+        a.paypal-link:hover { border-color: #0070ba; background-color: #0070ba; color: white; }
+        a.venmo-link:hover { border-color: #008CFF; background-color: #008CFF; color: white; }
 
         /* Responsive Media Queries */
         @media (max-width: 900px) { .roll-builder { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 2.5rem; } .calc-grid { grid-template-columns: 1fr; } }
@@ -342,6 +347,10 @@
         
         <div class="footer-link">
             <a href="mailto:dannytk4212002@gmail.com?subject=D&D%20Combat%20Simulator%20Feedback">Send Feedback</a>
+            <span class="footer-label">| tip your local wizard:</span>
+            <!-- UPDATE YOUR LINKS HERE -->
+            <a href="https://paypal.me/kenttk421" target="_blank" class="paypal-link">PayPal</a>
+            <a href="https://venmo.com/u/daniel-k-Abrams" target="_blank" class="venmo-link">Venmo</a>
         </div>
     </div>
 
@@ -354,6 +363,24 @@
         const LS_LAST_STATE_KEY = 'lawney_crystal_ball_last_state';
         const LS_PRESETS_KEY = 'lawney_crystal_ball_presets';
         let presets = {};
+
+        // NOTE: The "Update me" comments are here!
+        const DEFAULT_PRESETS = {
+            // Tab 1: Dice Playground // Update me
+            "Advantage Roll": { tabId: "tab-1", state: { "d20": { count: 2, dropLow: 1, dropHigh: 0 }, "meta": { value: 0, dc: 0 } } },
+            "Disadvantage Roll": { tabId: "tab-1", state: { "d20": { count: 2, dropLow: 0, dropHigh: 1 }, "meta": { value: 0, dc: 0 } } },
+            "Elven Accuracy (Adv)": { tabId: "tab-1", state: { "d20": { count: 3, dropLow: 2, dropHigh: 0 }, "meta": { value: 0, dc: 0 } } },
+            
+            // Tab 2: Attack Roll Calculator // Update me
+            "Longsword Attack": { tabId: "tab-2", state: { 'attack-bonus': "5", 'target-ac': "15", 'damage-dice': "1d8+3", 'attacks-per-turn': "1", 'advantage': "0", 'ac-compare-override-toggle': false } },
+            "Greatsword (GWM)": { tabId: "tab-2", state: { 'attack-bonus': "0", 'target-ac': "15", 'damage-dice': "2d6+13", 'attacks-per-turn': "1", 'advantage': "0", 'ac-compare-override-toggle': false } },
+            "Scorching Ray (3 Bolts)": { tabId: "tab-2", state: { 'attack-bonus': "7", 'target-ac': "14", 'damage-dice': "2d6", 'attacks-per-turn': "3", 'advantage': "0", 'ac-compare-override-toggle': false } },
+            
+            // Tab 3: Saving Throw Calculator // Update me
+            "Fireball (Lvl 3)": { tabId: "tab-3", state: { 'save-dc': "15", 'save-damage': "8d6", 'target-save-bonus': "2", 'save-advantage': "0", 'save-outcome': "0.5", 'num-targets': "3" } },
+            "Hold Person (Lvl 2)": { tabId: "tab-3", state: { 'save-dc': "15", 'save-damage': "0", 'target-save-bonus': "1", 'save-advantage': "0", 'save-outcome': "0", 'num-targets': "1" } },
+            "Dragon's Breath (Young Red)": { tabId: "tab-3", state: { 'save-dc': "17", 'save-damage': "16d6", 'target-save-bonus': "4", 'save-advantage': "0", 'save-outcome': "0.5", 'num-targets': "4" } },
+        };
 
         const playgroundState = {};
         const frozenState = { playground: null, attack: null, save: null };
@@ -531,7 +558,10 @@
         
         function loadPresets() {
             const presetsJSON = localStorage.getItem(LS_PRESETS_KEY);
-            presets = presetsJSON ? JSON.parse(presetsJSON) : {};
+            const userPresets = presetsJSON ? JSON.parse(presetsJSON) : {};
+            // Start with a deep copy of defaults, then merge user's on top
+            presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+            Object.assign(presets, userPresets);
             updatePresetUI();
         }
         
@@ -541,13 +571,32 @@
                 const currentSelection = select.value;
                 select.innerHTML = `<option value="">--- Load Preset ---</option>`;
                 
-                const relevantPresets = Object.keys(presets).filter(key => presets[key].tabId === tabId);
-                relevantPresets.sort().forEach(key => {
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = key;
-                    select.appendChild(option);
-                });
+                const defaultPresetsForTab = Object.keys(DEFAULT_PRESETS).filter(key => DEFAULT_PRESETS[key].tabId === tabId);
+                const userPresetsForTab = Object.keys(presets).filter(key => presets[key].tabId === tabId && !DEFAULT_PRESETS.hasOwnProperty(key));
+                
+                if (defaultPresetsForTab.length > 0) {
+                    const group = document.createElement('optgroup');
+                    group.label = "Default Presets";
+                    defaultPresetsForTab.sort().forEach(key => {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = key;
+                        group.appendChild(option);
+                    });
+                    select.appendChild(group);
+                }
+                
+                if (userPresetsForTab.length > 0) {
+                    const group = document.createElement('optgroup');
+                    group.label = "Your Presets";
+                    userPresetsForTab.sort().forEach(key => {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = key;
+                        group.appendChild(option);
+                    });
+                    select.appendChild(group);
+                }
 
                 if (select.querySelector(`option[value="${currentSelection}"]`)) {
                     select.value = currentSelection;
@@ -565,6 +614,17 @@
                 input.classList.add('invalid');
                 input.focus();
                 setTimeout(() => input.classList.remove('invalid'), 1500);
+                return;
+            }
+
+            if (DEFAULT_PRESETS.hasOwnProperty(presetName)) {
+                input.classList.add('invalid');
+                input.value = '';
+                input.placeholder = "Cannot overwrite default!";
+                setTimeout(() => { 
+                    input.classList.remove('invalid');
+                    input.placeholder = "New Preset Name";
+                }, 2000);
                 return;
             }
 
@@ -592,10 +652,14 @@
                     'num-targets': document.getElementById('num-targets').value,
                 };
             }
+            
+            // We only save the user presets to localStorage
+            const presetsJSON = localStorage.getItem(LS_PRESETS_KEY);
+            const userPresets = presetsJSON ? JSON.parse(presetsJSON) : {};
+            userPresets[presetName] = presetData;
+            localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(userPresets));
 
-            presets[presetName] = presetData;
-            localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(presets));
-            updatePresetUI();
+            loadPresets(); // Reload all presets to update UI
             
             input.value = '';
             const originalText = saveButton.textContent;
@@ -610,13 +674,22 @@
         function loadPreset(event) {
             const select = event.target;
             const presetName = select.value;
-            if (!presetName) return;
+            if (!presetName || !presets[presetName]) return;
 
             const preset = presets[presetName];
-            if (!preset) return;
             
             if (preset.tabId === 'tab-1') {
-                Object.assign(playgroundState, preset.state);
+                // Clear state before loading
+                for (const key in playgroundState) {
+                    if (key !== 'meta') playgroundState[key] = { count: 0, dropLow: 0, dropHigh: 0 };
+                }
+                playgroundState.meta = { value: 0, dc: 0 };
+
+                // Apply preset state
+                for (const key in preset.state) {
+                     playgroundState[key] = { ...playgroundState[key], ...preset.state[key] };
+                }
+
                 syncUiToState();
                 updatePlaygroundChart();
             } else {
@@ -647,14 +720,16 @@
             const deleteButton = event.target;
             const presetToDelete = select.value;
 
-            if (!presetToDelete) return; 
+            if (!presetToDelete || DEFAULT_PRESETS.hasOwnProperty(presetToDelete)) return; 
 
-            delete presets[presetToDelete];
-            localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(presets));
+            const presetsJSON = localStorage.getItem(LS_PRESETS_KEY);
+            const userPresets = presetsJSON ? JSON.parse(presetsJSON) : {};
+            delete userPresets[presetToDelete];
+            localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(userPresets));
             
             deleteButton.textContent = 'Deleted!';
             
-            updatePresetUI();
+            loadPresets(); // Reload all presets to update UI
             updateDeleteButtonState(manager);
         }
 
@@ -663,12 +738,16 @@
             const deleteButton = manager.querySelector('.btn-delete');
             const presetToActOn = select.value;
 
-            if (presetToActOn) {
+            if (presetToActOn && !DEFAULT_PRESETS.hasOwnProperty(presetToActOn)) {
                 deleteButton.disabled = false;
                 deleteButton.textContent = `Delete '${presetToActOn}'`;
             } else {
                 deleteButton.disabled = true;
-                deleteButton.textContent = 'Delete Selected';
+                if (presetToActOn && DEFAULT_PRESETS.hasOwnProperty(presetToActOn)) {
+                    deleteButton.textContent = 'Cannot Delete Default';
+                } else {
+                    deleteButton.textContent = 'Delete Selected';
+                }
             }
         }
 
@@ -702,7 +781,7 @@
         
         function initializeDicePlayground() { diceTypes.forEach(s => createDieControl(`d${s}`)); createDieControl('meta'); syncUiToState(); updatePlaygroundChart(); }
         function createDieControl(key) { const isMeta = key === 'meta'; playgroundState[key] = isMeta ? { value: 0, dc: 0 } : { count: 0, dropLow: 0, dropHigh: 0 }; const label = isMeta ? "Bonuses" : `D${key.substring(1)}`; const icon = diceIcons[isMeta ? 'meta' : parseInt(key.substring(1))]; const metaControlsHTML = `<div class="control-row"><span>Modifier</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="value" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span>DC</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dc" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div>`; const dieControlsHTML = `<div class="control-row"><span>Count</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="count" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span class="label-drop-low">Drop Lowest</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dropLow" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span class="label-drop-high">Drop Highest</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dropHigh" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div>`; ui.roll_builder.insertAdjacentHTML('beforeend', `<div class="die-control" data-key="${key}"><div class="die-header">${icon}<span class="die-label">${label}</span></div><div class="controls-wrapper">${isMeta ? metaControlsHTML : dieControlsHTML}</div></div>`); }
-        function getSingleRollResult(withDetails = false) { let grandTotal = 0; const detailParts = []; for (const key in playgroundState) { if (key === 'meta' || playgroundState[key].count === 0) continue; const { count, dropLow, dropHigh } = playgroundState[key]; const sides = parseInt(key.substring(1)); const isNegative = count < 0; const rollCount = Math.abs(count); const keptCount = rollCount - dropLow - dropHigh; if (keptCount <= 0) { if (withDetails) detailParts.push(`<b>${count}D${sides}</b>: All dice dropped!`); continue; } const rolls = Array.from({ length: rollCount }, () => Math.floor(Math.random() * sides) + 1); const keptRolls = (dropLow > 0 || dropHigh > 0) ? [...rolls].sort((a,b)=>a-b).slice(dropLow, rollCount - dropHigh) : rolls; let subTotal = keptRolls.reduce((sum, roll) => sum + roll, 0); if (isNegative) subTotal *= -1; grandTotal += subTotal; if (withDetails) { let detail = `<b>${count}D${sides}</b>: [${rolls.join(', ')}]`; if (dropLow > 0 || dropHigh > 0) { detail += ` ➔ Kept [${keptRolls.join(', ')}]`; } detail += ` = ${subTotal}`; detailParts.push(detail); } } grandTotal += playgroundState.meta.value; if (withDetails) { if (playgroundState.meta.value !== 0) detailParts.push(`<b>Modifier</b>: ${playgroundState.meta.value > 0 ? '+' : ''}${playgroundState.meta.value}`); return { grandTotal, detailParts }; } return grandTotal; }
+        function getSingleRollResult(withDetails = false) { let grandTotal = 0; const detailParts = []; for (const key in playgroundState) { if (key === 'meta' || playgroundState[key].count === 0) continue; const { count, dropLow, dropHigh } = playgroundState[key]; const sides = parseInt(key.substring(1)); const isNegative = count < 0; const rollCount = Math.abs(count); const keptCount = rollCount - dropLow - dropHigh; if (keptCount <= 0) { if (withDetails) detailParts.push(`<b>${count}D${sides}</b>: All dice dropped!`); continue; } const rolls = Array.from({ length: rollCount }, () => Math.floor(Math.random() * sides) + 1); const keptRolls = (dropLow > 0 || dropHigh > 0) ? [...rolls].sort((a,b)=>a-b).slice(dropLow, rollCount - dropHigh) : rolls; let subTotal = keptRolls.reduce((sum, roll) => sum + roll, 0); if (isNegative) subTotal *= -1; grandTotal += subTotal; if (withDetails) { let detail = `<b>${count}D${sides}</b>: [${rolls.join(', ')}]`; if (dropLow > 0 || dropHigh > 0) { detail += ` âž” Kept [${keptRolls.join(', ')}]`; } detail += ` = ${subTotal}`; detailParts.push(detail); } } grandTotal += playgroundState.meta.value; if (withDetails) { if (playgroundState.meta.value !== 0) detailParts.push(`<b>Modifier</b>: ${playgroundState.meta.value > 0 ? '+' : ''}${playgroundState.meta.value}`); return { grandTotal, detailParts }; } return grandTotal; }
         function handleRoll() { const { grandTotal, detailParts } = getSingleRollResult(true); if (detailParts.length === 0 && playgroundState.meta.value === 0) { ui.result_total.textContent = '0'; ui.result_details.innerHTML = 'Nothing to roll!'; ui.result_status.innerHTML = ''; } else { ui.result_total.textContent = grandTotal; ui.result_details.innerHTML = detailParts.join('<br>'); } ui.result_total.classList.remove('placeholder'); const dc = playgroundState.meta.dc; if (dc > 0) { if (grandTotal >= dc) { ui.result_status.innerHTML = `<span class="success">Success!</span>`; } else { ui.result_status.innerHTML = `<span class="failure">Failure</span>`; } } else { ui.result_status.innerHTML = ''; } simulationResult.playground = grandTotal; updatePlaygroundChart(); }
         function updatePlaygroundChart() {
             ui.playground_chart_container.innerHTML = `<p class="chart-message">Consulting the ether...</p>`;
@@ -852,8 +931,8 @@
             for (let i = 0; i < params.numAttacks; i++) {
                 let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
                 let finalRoll = d20roll1; let rollDetail = `d20: ${d20roll1}`;
-                if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
-                if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
+                if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]âž”${finalRoll}`; }
+                if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]âž”${finalRoll}`; }
                 
                 let attackResult; let damage = 0;
                 if (finalRoll === 1) { attackResult = `<span class="failure">Crit Miss!</span> (0 dmg)`; damage = 0; }
@@ -866,7 +945,7 @@
                     attackResult = `<span class="success">Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
                 } else { attackResult = `<span class="failure">Miss!</span> (0 dmg)`; damage = 0; }
                 
-                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} ➔ ${attackResult}`);
+                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} âž” ${attackResult}`);
                 grandTotalDamage += damage;
             }
 
@@ -975,17 +1054,17 @@
             for (let i = 0; i < numTargets; i++) {
                 let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
                 let finalRoll = d20roll1; let rollDetail = `d20 Roll: ${d20roll1}`;
-                if (advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20 (Adv): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
-                if (advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20 (Dis): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
+                if (advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20 (Adv): [${d20roll1}, ${d20roll2}] âž” ${finalRoll}`; }
+                if (advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20 (Dis): [${d20roll1}, ${d20roll2}] âž” ${finalRoll}`; }
                 
                 const { total: fullDmg, detail: dmgDetail } = getDiceRoll({groups, mod});
                 let resultText; let damageTaken = 0;
                 if (finalRoll + saveBonus >= saveDC) {
                     damageTaken = Math.floor(fullDmg * saveOutcome);
-                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) ➔ <span class="success">Success!</span> Damage: ${fullDmg}*${saveOutcome} = ${damageTaken}.`;
+                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) âž” <span class="success">Success!</span> Damage: ${fullDmg}*${saveOutcome} = ${damageTaken}.`;
                 } else {
                     damageTaken = fullDmg;
-                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) ➔ <span class="failure">Failure!</span> Damage: ${dmgDetail} = ${damageTaken}.`;
+                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) âž” <span class="failure">Failure!</span> Damage: ${dmgDetail} = ${damageTaken}.`;
                 }
                 resultParts.push(resultText);
                 grandTotalDamage += damageTaken;

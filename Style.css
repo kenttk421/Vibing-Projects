@@ -1,0 +1,209 @@
+:root {
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #212529;
+    --subtle-text: #6c757d;
+    --accent-color: #007bff;
+    --border-color: #e9ecef;
+}
+
+/* --- General & Reset --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+h1, h2, h3 {
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 2.25rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+a:hover {
+    color: #0056b3;
+}
+
+section {
+    padding: 5rem 0;
+}
+
+/* --- Header & Navigation --- */
+header {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+nav ul a {
+    font-weight: 600;
+    color: var(--subtle-text);
+}
+nav ul a:hover {
+    color: var(--text-color);
+}
+
+/* --- Hero Section --- */
+#hero {
+    text-align: center;
+    padding: 5rem 0;
+}
+
+#hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 1rem;
+}
+
+#hero p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--subtle-text);
+}
+
+/* --- Projects Section --- */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+.project-card:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.project-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+}
+
+.card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-content h3 {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.tags span {
+    background-color: var(--bg-color);
+    color: var(--subtle-text);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.card-content p {
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    color: var(--subtle-text);
+}
+
+.project-link {
+    align-self: flex-start;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+}
+.project-link:hover {
+    background-color: var(--text-color);
+    color: var(--card-bg);
+    border-color: var(--text-color);
+}
+
+/* --- About & Footer --- */
+#about {
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+#about p {
+    max-width: 650px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--subtle-text);
+}
+
+footer {
+    padding: 2.5rem 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--subtle-text);
+}

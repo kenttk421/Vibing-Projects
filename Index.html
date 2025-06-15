@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibingprojects</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="container">
+        <nav>
+            <a href="#" class="logo">Vibingprojects</a>
+            <ul>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="container">
+            <!-- UPDATE THIS TEXT! Keep it simple. -->
+            <h1>Stuff I've Made.</h1>
+            <p>This is where I put my projects. Some are useful, some are just for fun. Feel free to take a look around.</p>
+        </section>
+
+        <section id="projects" class="container">
+            <h2>Projects</h2>
+            <div class="project-grid">
+                
+                <!-- Project Card 1: Lawney's Crystal Ball -->
+                <div class="project-card">
+                    <a href="Lawney's Crystal Ball V1.6.html" target="_blank">
+                        <img src="assets/crystal-ball-screenshot.png" alt="Screenshot of Lawney's Crystal Ball D&D tool">
+                    </a>
+                    <div class="card-content">
+                        <h3>Lawney's Crystal Ball</h3>
+                        <div class="tags">
+                            <span>Web App</span>
+                            <span>D&D 5e</span>
+                            <span>Statistics</span>
+                            <span>JavaScript</span>
+                        </div>
+                        <p>
+                            A D&D 5e probability calculator and combat simulator. It helps you figure out the odds of your attacks, spells, and any other dice rolls you can think of.
+                        </p>
+                        <a href="Lawney's Crystal Ball V1.6.html" class="project-link" target="_blank">Open Project</a>
+                    </div>
+                </div>
+
+                <!-- ADD YOUR NEXT PROJECT CARD HERE -->
+                <!-- 
+                <div class="project-card">
+                    <a href="#" target="_blank">
+                        <img src="assets/your-next-project.png" alt="Screenshot of another project">
+                    </a>
+                    <div class="card-content">
+                        <h3>Your Next Project</h3>
+                        <div class="tags">
+                            <span>Tag 1</span>
+                            <span>Tag 2</span>
+                        </div>
+                        <p>
+                            A simple, direct sentence about what this project is or what it does.
+                        </p>
+                        <a href="#" class="project-link" target="_blank">Open Project</a>
+                    </div>
+                </div> 
+                -->
+
+            </div>
+        </section>
+
+        <section id="about" class="container">
+            <h2>About</h2>
+            <!-- UPDATE THIS TEXT! This is your spot to be you. -->
+            <p>
+                Hey, I'm [Your Name/Handle]. I'm a developer who likes building things on the web. This site is just a simple collection of my work.
+                <br><br>
+                When I'm not coding, I'm probably [Your Hobby Here]. Thanks for stopping by.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; <span id="year"></span> Vibingprojects</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>

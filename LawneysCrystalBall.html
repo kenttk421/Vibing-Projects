@@ -417,21 +417,21 @@
         const LS_PRESETS_KEY = 'lawney_crystal_ball_presets';
         let presets = {};
 
-        // NOTE: The "Update me" comments are here!
         const DEFAULT_PRESETS = {
-            // Tab 1: Dice Playground // Update me
+            // Tab 1: Dice Playground
+            "Roll for stats": { tabId: "tab-1", state: { "d6": { count: 4, dropLow: 1, dropHigh: 0 }, "meta": { value: 0, dc: 0 } } },
             "Advantage Roll": { tabId: "tab-1", state: { "d20": { count: 2, dropLow: 1, dropHigh: 0 }, "meta": { value: 0, dc: 0 } } },
             "Disadvantage Roll": { tabId: "tab-1", state: { "d20": { count: 2, dropLow: 0, dropHigh: 1 }, "meta": { value: 0, dc: 0 } } },
             "Elven Accuracy (Adv)": { tabId: "tab-1", state: { "d20": { count: 3, dropLow: 2, dropHigh: 0 }, "meta": { value: 0, dc: 0 } } },
             
-            // Tab 2: Attack Roll Calculator // Update me
+            // Tab 2: Attack Roll Calculator
             "Longsword Attack": { tabId: "tab-2", state: { 'attack-bonus': "5", 'target-ac': "15", 'damage-dice': "1d8+3", 'attacks-per-turn': "1", 'advantage': "0", 'ac-compare-override-toggle': false } },
-            "Greatsword (GWM)": { tabId: "tab-2", state: { 'attack-bonus': "0", 'target-ac': "15", 'damage-dice': "2d6+13", 'attacks-per-turn': "1", 'advantage': "0", 'ac-compare-override-toggle': false } },
+            "Longbow +2": { tabId: "tab-2", state: { 'attack-bonus': "11", 'target-ac': "13", 'damage-dice': "1D8+7", 'attacks-per-turn': "1", 'advantage': "1", 'ac-compare-override-toggle': false } },
             "Scorching Ray (3 Bolts)": { tabId: "tab-2", state: { 'attack-bonus': "7", 'target-ac': "14", 'damage-dice': "2d6", 'attacks-per-turn': "3", 'advantage': "0", 'ac-compare-override-toggle': false } },
             
-            // Tab 3: Saving Throw Calculator // Update me
+            // Tab 3: Saving Throw Calculator
             "Fireball (Lvl 3)": { tabId: "tab-3", state: { 'save-dc': "15", 'save-damage': "8d6", 'target-save-bonus': "2", 'save-advantage': "0", 'save-outcome': "0.5", 'num-targets': "3" } },
-            "Hold Person (Lvl 2)": { tabId: "tab-3", state: { 'save-dc': "15", 'save-damage': "0", 'target-save-bonus': "1", 'save-advantage': "0", 'save-outcome': "0", 'num-targets': "1" } },
+            "Disintegrate (Lvl 6)": { tabId: "tab-3", state: { 'save-dc': "19", 'save-damage': "10d6+40", 'target-save-bonus': "5", 'save-advantage': "0", 'save-outcome': "0", 'num-targets': "1" } },
             "Dragon's Breath (Young Red)": { tabId: "tab-3", state: { 'save-dc': "17", 'save-damage': "16d6", 'target-save-bonus': "4", 'save-advantage': "0", 'save-outcome': "0.5", 'num-targets': "4" } },
         };
 

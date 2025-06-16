@@ -210,7 +210,7 @@
                             <svg viewBox="0 0 32 32"><path d="M16 3 L30 16 L16 29 L2 16 Z"></path></svg>
                         </div>
                         <h3>Attack Calculator</h3>
-                        <p>Calculate your Average Damage Per Round (ADPR) against any target AC. Factor in multiple attacks, critical hits, and special feats.</p>
+                        <p>Calculate your Average Damage Per Round (DPR) against any target AC. Factor in multiple attacks, critical hits, and special feats.</p>
                         <button class="go-to-tab-btn" data-target-tab="tab-2">Analyze Attacks</button>
                     </div>
                     <div class="feature-box">
@@ -400,7 +400,7 @@
         
         <div class="footer-link">
             <a href="mailto:dannytk4212002@gmail.com?subject=D&D%20Combat%20Simulator%20Feedback">Send Feedback</a>
-            <span class="footer-label">| tip your local wizard:</span>
+            <span class="footer-label"> tip your local wizard:</span>
             <!-- UPDATE YOUR LINKS HERE -->
             <a href="https://paypal.me/kenttk421" target="_blank" class="paypal-link">PayPal</a>
             <a href="https://venmo.com/u/daniel-k-Abrams" target="_blank" class="venmo-link">Venmo</a>
@@ -425,9 +425,9 @@
             "Elven Accuracy (Adv)": { tabId: "tab-1", state: { "d20": { count: 3, dropLow: 2, dropHigh: 0 }, "meta": { value: 0, dc: 0 } } },
             
             // Tab 2: Attack Roll Calculator
-            "Longsword Attack": { tabId: "tab-2", state: { 'attack-bonus': "5", 'target-ac': "15", 'damage-dice': "1d8+3", 'attacks-per-turn': "1", 'advantage': "0", 'ac-compare-override-toggle': false } },
-            "Longbow +2": { tabId: "tab-2", state: { 'attack-bonus': "11", 'target-ac': "13", 'damage-dice': "1D8+7", 'attacks-per-turn': "1", 'advantage': "1", 'ac-compare-override-toggle': false } },
-            "Scorching Ray (3 Bolts)": { tabId: "tab-2", state: { 'attack-bonus': "7", 'target-ac': "14", 'damage-dice': "2d6", 'attacks-per-turn': "3", 'advantage': "0", 'ac-compare-override-toggle': false } },
+            "Longsword Attack": { tabId: "tab-2", state: { 'attack-bonus': "5", 'target-ac': "15", 'damage-dice': "1d8+3", 'attacks-per-turn': "1", advState: "0", 'ac-compare-override-toggle': false } },
+            "Longbow (Sneak attack)": { tabId: "tab-2", state: { 'attack-bonus': "5", 'target-ac': "15", 'damage-dice': "1d8+3d6+5", 'attacks-per-turn': "1", advState: "1", 'ac-compare-override-toggle': false } },
+            "Scorching Ray (3 Bolts)": { tabId: "tab-2", state: { 'attack-bonus': "7", 'target-ac': "14", 'damage-dice': "2d6", 'attacks-per-turn': "3", advState: "0", 'ac-compare-override-toggle': false } },
             
             // Tab 3: Saving Throw Calculator
             "Fireball (Lvl 3)": { tabId: "tab-3", state: { 'save-dc': "15", 'save-damage': "8d6", 'target-save-bonus': "2", 'save-advantage': "0", 'save-outcome': "0.5", 'num-targets': "3" } },
@@ -446,7 +446,7 @@
          'playground-chart-container', 'playground-chart-info', 'adpr-chart-container', 'adpr-chart-info', 'save-chart-container', 'save-chart-info',
          'attack-future-button', 'attack-freeze-button', 'attack-clear-button', 'attack-sim-result',
          'save-future-button', 'save-freeze-button', 'save-clear-button', 'save-sim-result',
-         'tab-0' // Add welcome tab to UI object
+         'tab-0'
         ].forEach(id => ui[id.replace(/-/g, '_')] = document.getElementById(id));
         
         // --- INITIALIZATION ---
@@ -457,7 +457,6 @@
             loadPresets();
             loadState();
             setupEventListeners();
-            // Set initial state for all delete buttons
             document.querySelectorAll('.preset-manager').forEach(updateDeleteButtonState);
         }
 
@@ -481,7 +480,6 @@
                 }
             });
             
-            // Event listener for buttons on the Welcome tab
             ui.tab_0.addEventListener('click', (e) => {
                 if (e.target.classList.contains('go-to-tab-btn')) {
                     const targetTabId = e.target.dataset.targetTab;
@@ -541,7 +539,13 @@
             document.getElementById('save-adv-selector').addEventListener('change', calculateSaveDamage);
             document.getElementById('save-outcome-selector').addEventListener('change', calculateSaveDamage);
             ui.save_future_button.addEventListener('click', simulateSingleSave);
-            ui.save_freeze_button.addEventListener('click', () => { frozenState.save = getCurrentSaveDistribution(); calculateSaveDamage(); });
+            ui.save_freeze_button.addEventListener('click', () => { 
+                const result = getCurrentSaveDistribution();
+                if(result) {
+                    frozenState.save = result.distribution;
+                }
+                calculateSaveDamage(); 
+            });
             ui.save_clear_button.addEventListener('click', () => { frozenState.save = null; simulationResult.save = null; ui.save_sim_result.innerHTML = `<span class="placeholder">Awaiting a glimpse of the future...</span>`; calculateSaveDamage(); });
 
             window.addEventListener('resize', () => { const activeTab = document.querySelector('.tab-content.active').id; if (activeTab === 'tab-1') updatePlaygroundChart(); if (activeTab === 'tab-2') calculateADPR(); if (activeTab === 'tab-3') calculateSaveDamage(); });
@@ -552,14 +556,7 @@
             const state = {
                 activeTab: document.querySelector('.tab-content.active').id || 'tab-0',
                 playground: playgroundState,
-                attack: {
-                    'attack-bonus': document.getElementById('attack-bonus').value,
-                    'target-ac': document.getElementById('target-ac').value,
-                    'ac-compare-override-toggle': document.getElementById('ac-compare-override-toggle').checked,
-                    'damage-dice': document.getElementById('damage-dice').value,
-                    'attacks-per-turn': document.getElementById('attacks-per-turn').value,
-                    'advantage': document.querySelector('input[name="advantage"]:checked').value,
-                },
+                attack: getAttackParamsFromUI(),
                 save: {
                     'save-dc': document.getElementById('save-dc').value,
                     'save-damage': document.getElementById('save-damage').value,
@@ -569,39 +566,28 @@
                     'num-targets': document.getElementById('num-targets').value,
                 }
             };
-             // Only save frozen state if it exists
             if(frozenState.attack) state.frozenAttack = frozenState.attack;
             if(frozenState.save) state.frozenSave = frozenState.save;
-
             localStorage.setItem(LS_LAST_STATE_KEY, JSON.stringify(state));
         }
 
         function loadState() {
             const stateJSON = localStorage.getItem(LS_LAST_STATE_KEY);
             if (!stateJSON) return;
-
             try {
                 const state = JSON.parse(stateJSON);
-                
                 Object.assign(playgroundState, state.playground);
                 syncUiToState();
-
                 if (state.attack) {
-                    for(const [id, value] of Object.entries(state.attack)) {
-                        const el = document.getElementById(id);
-                        if (id === 'advantage') {
-                            document.querySelector(`input[name="advantage"][value="${value}"]`).checked = true;
-                        } else if (el && el.type === 'checkbox') {
-                            el.checked = value;
-                        } else if (el) {
-                            el.value = value;
-                        }
-                    }
+                    document.getElementById('attack-bonus').value = state.attack['attack-bonus'];
+                    document.getElementById('target-ac').value = state.attack['target-ac'];
+                    document.getElementById('damage-dice').value = state.attack['damage-dice'];
+                    document.getElementById('attacks-per-turn').value = state.attack['attacks-per-turn'];
+                    document.querySelector(`input[name="advantage"][value="${state.attack.advState}"]`).checked = true;
+                    document.getElementById('ac-compare-override-toggle').checked = state.attack['ac-compare-override-toggle'];
                 }
-
                 if(state.frozenAttack) frozenState.attack = state.frozenAttack;
                 if(state.frozenSave) frozenState.save = state.frozenSave;
-
                 if (state.save) {
                     for(const [id, value] of Object.entries(state.save)) {
                          if (id === 'save-advantage' || id === 'save-outcome') {
@@ -612,13 +598,11 @@
                         }
                     }
                 }
-                
                 const tabToLoad = state.activeTab || 'tab-0';
                 const buttonToClick = document.querySelector(`.tab-button[data-tab="${tabToLoad}"]`);
                 if (buttonToClick) {
                    buttonToClick.click();
                 }
-
             } catch (e) {
                 console.error("Failed to load saved state:", e);
                 localStorage.removeItem(LS_LAST_STATE_KEY);
@@ -628,7 +612,6 @@
         function loadPresets() {
             const presetsJSON = localStorage.getItem(LS_PRESETS_KEY);
             const userPresets = presetsJSON ? JSON.parse(presetsJSON) : {};
-            // Start with a deep copy of defaults, then merge user's on top
             presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
             Object.assign(presets, userPresets);
             updatePresetUI();
@@ -639,10 +622,8 @@
                 const tabId = select.closest('.preset-manager').dataset.tabId;
                 const currentSelection = select.value;
                 select.innerHTML = `<option value="">--- Load Preset ---</option>`;
-                
                 const defaultPresetsForTab = Object.keys(DEFAULT_PRESETS).filter(key => DEFAULT_PRESETS[key].tabId === tabId);
                 const userPresetsForTab = Object.keys(presets).filter(key => presets[key].tabId === tabId && !DEFAULT_PRESETS.hasOwnProperty(key));
-                
                 if (defaultPresetsForTab.length > 0) {
                     const group = document.createElement('optgroup');
                     group.label = "Default Presets";
@@ -654,7 +635,6 @@
                     });
                     select.appendChild(group);
                 }
-                
                 if (userPresetsForTab.length > 0) {
                     const group = document.createElement('optgroup');
                     group.label = "Your Presets";
@@ -666,7 +646,6 @@
                     });
                     select.appendChild(group);
                 }
-
                 if (select.querySelector(`option[value="${currentSelection}"]`)) {
                     select.value = currentSelection;
                 }
@@ -678,14 +657,12 @@
             const input = manager.querySelector('.preset-name-input');
             const saveButton = event.target;
             const presetName = input.value.trim();
-
             if (presetName === '') {
                 input.classList.add('invalid');
                 input.focus();
                 setTimeout(() => input.classList.remove('invalid'), 1500);
                 return;
             }
-
             if (DEFAULT_PRESETS.hasOwnProperty(presetName)) {
                 input.classList.add('invalid');
                 input.value = '';
@@ -696,21 +673,12 @@
                 }, 2000);
                 return;
             }
-
             const tabId = manager.dataset.tabId;
             let presetData = { tabId };
-            
             if (tabId === 'tab-1') {
                 presetData.state = JSON.parse(JSON.stringify(playgroundState));
             } else if (tabId === 'tab-2') {
-                presetData.state = {
-                    'attack-bonus': document.getElementById('attack-bonus').value,
-                    'target-ac': document.getElementById('target-ac').value,
-                    'ac-compare-override-toggle': document.getElementById('ac-compare-override-toggle').checked,
-                    'damage-dice': document.getElementById('damage-dice').value,
-                    'attacks-per-turn': document.getElementById('attacks-per-turn').value,
-                    'advantage': document.querySelector('input[name="advantage"]:checked').value,
-                };
+                presetData.state = getAttackParamsFromUI();
             } else if (tabId === 'tab-3') {
                  presetData.state = {
                     'save-dc': document.getElementById('save-dc').value,
@@ -721,15 +689,11 @@
                     'num-targets': document.getElementById('num-targets').value,
                 };
             }
-            
-            // We only save the user presets to localStorage
             const presetsJSON = localStorage.getItem(LS_PRESETS_KEY);
             const userPresets = presetsJSON ? JSON.parse(presetsJSON) : {};
             userPresets[presetName] = presetData;
             localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(userPresets));
-
-            loadPresets(); // Reload all presets to update UI
-            
+            loadPresets();
             input.value = '';
             const originalText = saveButton.textContent;
             saveButton.textContent = 'Saved!';
@@ -744,24 +708,27 @@
             const select = event.target;
             const presetName = select.value;
             if (!presetName || !presets[presetName]) return;
-
             const preset = presets[presetName];
-            
             if (preset.tabId === 'tab-1') {
-                // Clear state before loading
                 for (const key in playgroundState) {
                     if (key !== 'meta') playgroundState[key] = { count: 0, dropLow: 0, dropHigh: 0 };
                 }
                 playgroundState.meta = { value: 0, dc: 0 };
-
-                // Apply preset state
                 for (const key in preset.state) {
                      playgroundState[key] = { ...playgroundState[key], ...preset.state[key] };
                 }
-
                 syncUiToState();
                 updatePlaygroundChart();
-            } else {
+            } else if (preset.tabId === 'tab-2') {
+                const state = preset.state;
+                document.getElementById('attack-bonus').value = state['attack-bonus'];
+                document.getElementById('target-ac').value = state['target-ac'];
+                document.getElementById('damage-dice').value = state['damage-dice'];
+                document.getElementById('attacks-per-turn').value = state['attacks-per-turn'];
+                document.querySelector(`input[name="advantage"][value="${state.advState}"]`).checked = true;
+                document.getElementById('ac-compare-override-toggle').checked = state['ac-compare-override-toggle'];
+                calculateADPR();
+            } else { // tab-3
                 for(const [id, value] of Object.entries(preset.state)) {
                     const input = document.getElementById(id);
                     if (input) {
@@ -788,17 +755,13 @@
             const select = manager.querySelector('.preset-select');
             const deleteButton = event.target;
             const presetToDelete = select.value;
-
             if (!presetToDelete || DEFAULT_PRESETS.hasOwnProperty(presetToDelete)) return; 
-
             const presetsJSON = localStorage.getItem(LS_PRESETS_KEY);
             const userPresets = presetsJSON ? JSON.parse(presetsJSON) : {};
             delete userPresets[presetToDelete];
             localStorage.setItem(LS_PRESETS_KEY, JSON.stringify(userPresets));
-            
             deleteButton.textContent = 'Deleted!';
-            
-            loadPresets(); // Reload all presets to update UI
+            loadPresets();
             updateDeleteButtonState(manager);
         }
 
@@ -806,7 +769,6 @@
             const select = manager.querySelector('.preset-select');
             const deleteButton = manager.querySelector('.btn-delete');
             const presetToActOn = select.value;
-
             if (presetToActOn && !DEFAULT_PRESETS.hasOwnProperty(presetToActOn)) {
                 deleteButton.disabled = false;
                 deleteButton.textContent = `Delete '${presetToActOn}'`;
@@ -829,25 +791,68 @@
             };
         }
         
+        // --- CALCULATION ENGINE ---
         function parseDamageString(str) {
             const result = { groups: [], mod: 0, error: false };
             if (!str || typeof str !== 'string' || str.trim() === '') return result;
+
             const normalizedStr = str.trim().replace(/\s/g, '').replace(/([+-])/g, ' $1 ');
             const parts = normalizedStr.split(' ');
             let currentOperator = '+';
+
             for (const part of parts) {
-                if (part === '+' || part === '-') { currentOperator = part; continue; }
+                if (part === '+' || part === '-') {
+                    currentOperator = part;
+                    continue;
+                }
                 const sign = currentOperator === '+' ? 1 : -1;
-                const dieMatch = part.match(/^(\d+)[dD](\d+)$/);
-                if (dieMatch) { result.groups.push({ count: parseInt(dieMatch[1]) * sign, sides: parseInt(dieMatch[2]) }); continue; }
+                const dieMatch = part.match(/^(\d*)[dD](\d+)$/);
+                if (dieMatch) {
+                    const count = dieMatch[1] === '' ? 1 : parseInt(dieMatch[1]);
+                    result.groups.push({ count: count * sign, sides: parseInt(dieMatch[2]) });
+                    continue;
+                }
                 const numMatch = part.match(/^\d+$/);
-                if (numMatch) { result.mod += parseInt(part) * sign; continue; }
+                if (numMatch) {
+                    result.mod += parseInt(part) * sign;
+                    continue;
+                }
                 result.error = true;
                 return result;
             }
             return result;
         }
         
+        function getDiceDistribution(damageData) {
+            const { groups, mod } = damageData;
+            if (!groups || groups.length === 0) {
+                return { data: [{ value: mod, probability: 1 }], type: 'Constant' };
+            }
+
+            let finalDistribution = { data: [{ value: 0, probability: 1 }], type: 'Exact' };
+
+            groups.forEach(group => {
+                const absCount = Math.abs(group.count);
+                if (absCount === 0) return;
+
+                const singleDieDist = { data: [], type: 'Exact' };
+                for (let i = 1; i <= group.sides; i++) {
+                    const rollValue = group.count > 0 ? i : -i;
+                    singleDieDist.data.push({ value: rollValue, probability: 1 / group.sides });
+                }
+
+                let groupDistribution = { data: [{ value: 0, probability: 1 }], type: 'Exact' };
+                for (let i = 0; i < absCount; i++) {
+                    groupDistribution = convolveDistributions(groupDistribution, singleDieDist);
+                }
+                finalDistribution = convolveDistributions(finalDistribution, groupDistribution);
+            });
+            
+            finalDistribution.data.forEach(d => d.value += mod);
+            return finalDistribution;
+        }
+        
+        // --- DICE PLAYGROUND (TAB 1) ---
         function initializeDicePlayground() { diceTypes.forEach(s => createDieControl(`d${s}`)); createDieControl('meta'); syncUiToState(); updatePlaygroundChart(); }
         function createDieControl(key) { const isMeta = key === 'meta'; playgroundState[key] = isMeta ? { value: 0, dc: 0 } : { count: 0, dropLow: 0, dropHigh: 0 }; const label = isMeta ? "Bonuses" : `D${key.substring(1)}`; const icon = diceIcons[isMeta ? 'meta' : parseInt(key.substring(1))]; const metaControlsHTML = `<div class="control-row"><span>Modifier</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="value" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span>DC</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dc" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div>`; const dieControlsHTML = `<div class="control-row"><span>Count</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="count" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span class="label-drop-low">Drop Lowest</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dropLow" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div><div class="control-row"><span class="label-drop-high">Drop Highest</span><div class="count-controls"><button class="btn-adjust" data-action="decrease">-</button><input type="number" class="die-input" data-type="dropHigh" value="0"><button class="btn-adjust" data-action="increase">+</button></div></div>`; ui.roll_builder.insertAdjacentHTML('beforeend', `<div class="die-control" data-key="${key}"><div class="die-header">${icon}<span class="die-label">${label}</span></div><div class="controls-wrapper">${isMeta ? metaControlsHTML : dieControlsHTML}</div></div>`); }
         function getSingleRollResult(withDetails = false) { let grandTotal = 0; const detailParts = []; for (const key in playgroundState) { if (key === 'meta' || playgroundState[key].count === 0) continue; const { count, dropLow, dropHigh } = playgroundState[key]; const sides = parseInt(key.substring(1)); const isNegative = count < 0; const rollCount = Math.abs(count); const keptCount = rollCount - dropLow - dropHigh; if (keptCount <= 0) { if (withDetails) detailParts.push(`<b>${count}D${sides}</b>: All dice dropped!`); continue; } const rolls = Array.from({ length: rollCount }, () => Math.floor(Math.random() * sides) + 1); const keptRolls = (dropLow > 0 || dropHigh > 0) ? [...rolls].sort((a,b)=>a-b).slice(dropLow, rollCount - dropHigh) : rolls; let subTotal = keptRolls.reduce((sum, roll) => sum + roll, 0); if (isNegative) subTotal *= -1; grandTotal += subTotal; if (withDetails) { let detail = `<b>${count}D${sides}</b>: [${rolls.join(', ')}]`; if (dropLow > 0 || dropHigh > 0) { detail += ` ➔ Kept [${keptRolls.join(', ')}]`; } detail += ` = ${subTotal}`; detailParts.push(detail); } } grandTotal += playgroundState.meta.value; if (withDetails) { if (playgroundState.meta.value !== 0) detailParts.push(`<b>Modifier</b>: ${playgroundState.meta.value > 0 ? '+' : ''}${playgroundState.meta.value}`); return { grandTotal, detailParts }; } return grandTotal; }
@@ -870,7 +875,7 @@
                     infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`;
                 }
                 
-                const chartOptions = { data: result, frozenData: frozenState.playground, rollResult: simulationResult.playground, dc: playgroundState.meta.dc, xAxisLabel: 'Sum', infoText };
+                const chartOptions = { data: result, frozenData: frozenState.playground, rollResult: simulationResult.playground, dc: playgroundState.meta.dc, xAxisLabel: 'Sum', infoText, isCalculatorChart: false };
                 drawDistributionChart(ui.playground_chart_container, ui.playground_chart_info, chartOptions);
             }, 10);
         }
@@ -879,7 +884,9 @@
         function calculateProbabilitiesBruteForce() { const diceGroups = Object.entries(playgroundState).filter(([k,v])=>k!=='meta'&&v.count!==0).map(([k,v])=>({...v, sides:parseInt(k.substring(1))})); if (diceGroups.length === 0) return {data:null}; const sumCounts = {}; let totalCombinations = 0; function recurse(groupIndex, currentSum) { if (groupIndex === diceGroups.length) { sumCounts[currentSum] = (sumCounts[currentSum] || 0) + 1; totalCombinations++; return; } const group = diceGroups[groupIndex]; const rollCount = Math.abs(group.count); function generateGroupRolls(dieIndex, rolls) { if (dieIndex === rollCount) { const kept = [...rolls].sort((a,b)=>a-b).slice(group.dropLow, rollCount - group.dropHigh); let subTotal = kept.reduce((a, b) => a + b, 0); if (group.count < 0) subTotal *= -1; recurse(groupIndex + 1, currentSum + subTotal); return; } for (let i = 1; i <= group.sides; i++) { generateGroupRolls(dieIndex + 1, [...rolls, i]); } } generateGroupRolls(0, []); } recurse(0, playgroundState.meta.value); return { data: Object.entries(sumCounts).map(([sum,count])=>({value:parseInt(sum), probability:count/totalCombinations})), type:'Exact' }; }
         function calculateProbabilitiesSimulation() { const sumCounts = {}; for (let i = 0; i < SIMULATION_COUNT; i++) { const result = getSingleRollResult(); sumCounts[result] = (sumCounts[result] || 0) + 1; } let data = Object.entries(sumCounts).map(([sum, count]) => ({ value: parseInt(sum), probability: count / SIMULATION_COUNT })); data.sort((a, b) => a.value - b.value); const fullRangeData = []; if (data.length > 0) { const min = data[0].value; const max = data[data.length - 1].value; let dataIndex = 0; for (let i = min; i <= max; i++) { if (data[dataIndex] && data[dataIndex].value === i) { fullRangeData.push(data[dataIndex]); dataIndex++; } else { fullRangeData.push({ value: i, probability: 0 }); } } } const smoothedData = fullRangeData.map((point, i, arr) => { const p_im1 = arr[i - 1] ? arr[i - 1].probability : point.probability; const p_ip1 = arr[i + 1] ? arr[i + 1].probability : point.probability; return { value: point.value, probability: (p_im1 + point.probability + p_ip1) / 3 }; }); return { data: smoothedData, type: `Estimated (${(SIMULATION_COUNT/1000)}k sims, smoothed)` }; }
         
+        // --- ATTACK & SAVE CALCULATORS ---
         function initializeAttackRollCalculator() { calculateADPR(); }
+        function initializeSaveCalculator() { calculateSaveDamage(); }
 
         function calculateADPR() { 
             const currentParams = getAttackParamsFromUI();
@@ -905,36 +912,28 @@
                     frozenDistributionForChart = alternateResult.distribution;
                 }
             }
-
-            const chartDistribution = { ...distribution, data: distribution.data.filter(p => p.value !== 0) };
-            const frozenChartDistribution = frozenDistributionForChart ? { ...frozenDistributionForChart, data: frozenDistributionForChart.data.filter(p => p.value !== 0) } : null;
-
+            
             let infoText = '';
-            const currentStats = getStatsFromDistribution(chartDistribution);
-            if(currentStats) {
-                infoText += `<span class="current-info-text">Current - Range: ${currentStats.min} to ${currentStats.max} | Average: ${currentStats.average.toFixed(2)}</span>`;
-            }
+            const currentStats = getStatsFromDistribution(distribution);
+            if(currentStats) { infoText += `<span class="current-info-text">Current - Range: ${currentStats.min} to ${currentStats.max} | Average: ${currentStats.average.toFixed(2)}</span>`; }
+            const frozenStats = getStatsFromDistribution(frozenDistributionForChart);
+            if (frozenStats) { if (infoText) infoText += '<br>'; infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`; }
 
-            const frozenStats = getStatsFromDistribution(frozenChartDistribution);
-            if (frozenStats) {
-                if (infoText) infoText += '<br>';
-                infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`;
-            }
-
-            const chartOptions = { data: chartDistribution, frozenData: frozenChartDistribution, rollResult: simulationResult.attack, xAxisLabel: 'Total Damage', infoText, isCalculatorChart: true };
+            const chartOptions = { data: distribution, frozenData: frozenDistributionForChart, rollResult: simulationResult.attack, xAxisLabel: 'Total Damage', infoText, isCalculatorChart: true };
             drawDistributionChart(ui.adpr_chart_container, ui.adpr_chart_info, chartOptions);
         }
-        
+
         function getAttackParamsFromUI() {
             return {
                 atkBonus: parseInt(document.getElementById('attack-bonus').value) || 0,
                 targetAC: parseInt(document.getElementById('target-ac').value) || 0,
                 damageDice: document.getElementById('damage-dice').value,
                 numAttacks: parseInt(document.getElementById('attacks-per-turn').value) || 1,
-                advState: parseInt(document.querySelector('input[name="advantage"]:checked').value)
+                advState: parseInt(document.querySelector('input[name="advantage"]:checked').value),
+                'ac-compare-override-toggle': document.getElementById('ac-compare-override-toggle').checked
             };
         }
-        
+
         function getFullAttackDistribution(params) {
             const singleAttackDist = getSingleAttackDistribution(params);
             if (!singleAttackDist) return null;
@@ -974,9 +973,12 @@
             critChance = Math.max(0, critChance); missChance = Math.max(0, missChance); hitChance = Math.max(0, 1 - critChance - missChance); 
             const adpr = (hitChance * avgDamage) + (critChance * avgCritDamage); 
             
-            const damageDist = getDiceDistribution(groups, mod);
-            const critDamageGroups = groups.map(g => ({ ...g, count: g.count * 2 }));
-            const critDamageDist = getDiceDistribution(critDamageGroups, mod);
+            const damageDist = getDiceDistribution(damageData);
+            const critDamageData = { 
+                groups: groups.map(g => ({...g, count: g.count * 2})), 
+                mod: mod 
+            };
+            const critDamageDist = getDiceDistribution(critDamageData);
             
             const finalDist = {};
             damageDist.data.forEach(d => { finalDist[d.value] = (finalDist[d.value] || 0) + d.probability * hitChance; });
@@ -990,50 +992,13 @@
             return { distribution: chartData, summary: { adpr, critChance, hitChance, missChance, avgDamage, avgCritDamage } };
         }
 
-        function simulateSingleAttack() {
-            const params = getAttackParamsFromUI();
-            const damageData = parseDamageString(params.damageDice); if (damageData.error) return;
-            
-            let grandTotalDamage = 0;
-            const resultParts = [];
-
-            for (let i = 0; i < params.numAttacks; i++) {
-                let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
-                let finalRoll = d20roll1; let rollDetail = `d20: ${d20roll1}`;
-                if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
-                if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
-                
-                let attackResult; let damage = 0;
-                if (finalRoll === 1) { attackResult = `<span class="failure">Crit Miss!</span> (0 dmg)`; damage = 0; }
-                else if (finalRoll === 20) {
-                    const critGroups = damageData.groups.map(g => ({ ...g, count: g.count * 2}));
-                    const { total: dmg, detail } = getDiceRoll({groups: critGroups, mod: damageData.mod});
-                    attackResult = `<span class="success">Crit Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
-                } else if (finalRoll + params.atkBonus >= params.targetAC) {
-                    const { total: dmg, detail } = getDiceRoll(damageData);
-                    attackResult = `<span class="success">Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
-                } else { attackResult = `<span class="failure">Miss!</span> (0 dmg)`; damage = 0; }
-                
-                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} ➔ ${attackResult}`);
-                grandTotalDamage += damage;
-            }
-
-            let finalHtml = resultParts.join('<br>');
-            if (params.numAttacks > 1) {
-                finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`;
-            }
-            
-            ui.attack_sim_result.innerHTML = finalHtml;
-            simulationResult.attack = grandTotalDamage;
-            calculateADPR();
-        }
-
-        function initializeSaveCalculator() { calculateSaveDamage(); }
         function calculateSaveDamage() {
-            const distribution = getCurrentSaveDistribution();
-            if (!distribution) return;
+            const result = getCurrentSaveDistribution();
+            if (!result) return;
             
-            const { totalAvgDamage, successChance, failChance, avgFailDamage, avgSuccessDamage } = distribution.summary;
+            const { distribution, summary } = result;
+            const { totalAvgDamage, successChance, failChance, avgFailDamage, avgSuccessDamage } = summary;
+
             document.getElementById('save-total-damage').textContent = totalAvgDamage.toFixed(2); 
             document.getElementById('save-success-chance').textContent = `${(successChance * 100).toFixed(1)}%`; 
             document.getElementById('save-fail-chance').textContent = `${(failChance * 100).toFixed(1)}%`; 
@@ -1042,19 +1007,14 @@
             
             let infoText = '';
             const currentStats = getStatsFromDistribution(distribution);
-            if(currentStats) {
-                infoText += `<span class="current-info-text">Current - Range: ${currentStats.min} to ${currentStats.max} | Average: ${currentStats.average.toFixed(2)}</span>`;
-            }
-
+            if(currentStats) { infoText += `<span class="current-info-text">Current - Range: ${currentStats.min} to ${currentStats.max} | Average: ${currentStats.average.toFixed(2)}</span>`; }
             const frozenStats = getStatsFromDistribution(frozenState.save);
-            if (frozenStats) {
-                if (infoText) infoText += '<br>';
-                infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`;
-            }
+            if (frozenStats) { if (infoText) infoText += '<br>'; infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`; }
 
-            const chartOptions = { data: distribution, frozenData: frozenState.save, rollResult: simulationResult.save, xAxisLabel: 'Total Damage', infoText, isCalculatorChart: false };
+            const chartOptions = { data: distribution, frozenData: frozenState.save, rollResult: simulationResult.save, xAxisLabel: 'Total Damage', infoText, isCalculatorChart: true };
             drawDistributionChart(ui.save_chart_container, ui.save_chart_info, chartOptions);
         }
+
         function getCurrentSaveDistribution() {
             const damageInput = document.getElementById('save-damage'); const errorDisplay = document.getElementById('save-error'); 
             const damageData = parseDamageString(damageInput.value); 
@@ -1074,7 +1034,7 @@
             const saveOutcome = parseFloat(document.querySelector('input[name="save-outcome"]:checked').value); 
             const numTargets = parseInt(document.getElementById('num-targets').value) || 1; 
 
-            const avgFailDamage = groups.reduce((sum, g) => sum + Math.abs(g.count) * ((g.sides + 1) / 2), 0) + mod; 
+            const avgFailDamage = groups.reduce((sum, g) => sum + Math.abs(g.count) * ((g.sides + 1) / 2), 0) + mod;
             const avgSuccessDamage = avgFailDamage * saveOutcome; 
             const rollToSucceed = Math.max(1, Math.min(21, saveDC - saveBonus)); 
             
@@ -1086,13 +1046,18 @@
             const failChance = 1 - successChance; 
             const totalAvgDamage = numTargets * ((failChance * avgFailDamage) + (successChance * avgSuccessDamage)); 
             
-            const damageDist = getDiceDistribution(groups, mod);
+            const damageDist = getDiceDistribution(damageData);
             const singleTargetFinalDist = {};
             damageDist.data.forEach(d => { 
-                singleTargetFinalDist[d.value] = (singleTargetFinalDist[d.value] || 0) + d.probability * failChance; 
+                const failDamage = d.value;
+                const failProb = d.probability * failChance;
+                singleTargetFinalDist[failDamage] = (singleTargetFinalDist[failDamage] || 0) + failProb;
+
                 const successDmg = Math.floor(d.value * saveOutcome); 
-                singleTargetFinalDist[successDmg] = (singleTargetFinalDist[successDmg] || 0) + d.probability * successChance; 
+                const successProb = d.probability * successChance;
+                singleTargetFinalDist[successDmg] = (singleTargetFinalDist[successDmg] || 0) + successProb;
             });
+
             const singleTargetChartData = {
                 data: Object.entries(singleTargetFinalDist).map(([val, prob]) => ({ value: parseInt(val), probability: prob })),
                 type: damageDist.type
@@ -1104,13 +1069,55 @@
             }
 
             return { 
-                ...combinedDist,
+                distribution: combinedDist,
                 summary: { totalAvgDamage, successChance, failChance, avgFailDamage, avgSuccessDamage } 
             };
         }
+
+        // --- SIMULATION FUNCTIONS ---
+        function simulateSingleAttack() {
+            const params = getAttackParamsFromUI();
+            const damageData = parseDamageString(params.damageDice); if (damageData.error) return;
+            
+            let grandTotalDamage = 0;
+            const resultParts = [];
+
+            for (let i = 0; i < params.numAttacks; i++) {
+                let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
+                let finalRoll = d20roll1; let rollDetail = `d20: ${d20roll1}`;
+                if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
+                if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
+                
+                let attackResult; let damage = 0;
+                if (finalRoll === 1) { attackResult = `<span class="failure">Crit Miss!</span> (0 dmg)`; damage = 0; }
+                else if (finalRoll === 20) {
+                    const critDamageData = { 
+                        groups: damageData.groups.map(g => ({...g, count: g.count * 2})), 
+                        mod: damageData.mod 
+                    };
+                    const { total: dmg, detail } = getDiceRoll(critDamageData);
+                    attackResult = `<span class="success">Crit Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
+                } else if (finalRoll + params.atkBonus >= params.targetAC) {
+                    const { total: dmg, detail } = getDiceRoll(damageData);
+                    attackResult = `<span class="success">Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
+                } else { attackResult = `<span class="failure">Miss!</span> (0 dmg)`; damage = 0; }
+                
+                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} ➔ ${attackResult}`);
+                grandTotalDamage += damage;
+            }
+
+            let finalHtml = resultParts.join('<br>');
+            if (params.numAttacks > 1) { finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`; }
+            
+            ui.attack_sim_result.innerHTML = finalHtml;
+            simulationResult.attack = grandTotalDamage;
+            calculateADPR();
+        }
+        
         function simulateSingleSave() {
-            const damageInput = document.getElementById('save-damage'); const damageData = parseDamageString(damageInput.value); if (damageData.error) return;
-            const { groups, mod } = damageData; 
+            const damageData = parseDamageString(document.getElementById('save-damage').value); 
+            if (damageData.error) return;
+
             const saveDC = parseInt(document.getElementById('save-dc').value) || 0; 
             const saveBonus = parseInt(document.getElementById('target-save-bonus').value) || 0; 
             const advState = parseInt(document.querySelector('input[name="save-advantage"]:checked').value); 
@@ -1126,7 +1133,7 @@
                 if (advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20 (Adv): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
                 if (advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20 (Dis): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
                 
-                const { total: fullDmg, detail: dmgDetail } = getDiceRoll({groups, mod});
+                const { total: fullDmg, detail: dmgDetail } = getDiceRoll(damageData);
                 let resultText; let damageTaken = 0;
                 if (finalRoll + saveBonus >= saveDC) {
                     damageTaken = Math.floor(fullDmg * saveOutcome);
@@ -1140,15 +1147,14 @@
             }
 
             let finalHtml = resultParts.join('<br>');
-            if (numTargets > 1) {
-                finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`;
-            }
+            if (numTargets > 1) { finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`; }
 
             ui.save_sim_result.innerHTML = finalHtml;
             simulationResult.save = grandTotalDamage;
             calculateSaveDamage();
         }
 
+        // --- UTILITY & HELPER FUNCTIONS ---
         function hasData(result) { return result && result.data && result.data.length > 0; }
         function getStatsFromDistribution(distribution) {
             if (!hasData(distribution)) return null;
@@ -1159,7 +1165,6 @@
             const average = data.reduce((acc, p) => acc + p.value * p.probability, 0);
             return { min, max, average };
         }
-        
         function getDiceRoll(damageData) {
             const { groups, mod } = damageData;
             if (groups.length === 0) return { total: mod, detail: `${mod}` };
@@ -1188,41 +1193,9 @@
             return { total, detail };
         }
         
-        function getDiceDistribution(groups, mod) {
-            if (!groups || groups.length === 0) {
-                return { data: [{ value: mod, probability: 1 }], type: 'Constant' };
-            }
-
-            let finalDistribution = { data: [{ value: 0, probability: 1 }], type: 'Exact' };
-
-            groups.forEach(group => {
-                const absCount = Math.abs(group.count);
-                if (absCount === 0) return;
-
-                const singleDieDist = { data: [], type: 'Exact' };
-                for (let i = 1; i <= group.sides; i++) {
-                    const rollValue = group.count > 0 ? i : -i;
-                    singleDieDist.data.push({ value: rollValue, probability: 1 / group.sides });
-                }
-
-                let groupDistribution = { data: [{ value: 0, probability: 1 }], type: 'Exact' };
-                for (let i = 0; i < absCount; i++) {
-                    groupDistribution = convolveDistributions(groupDistribution, singleDieDist);
-                }
-                finalDistribution = convolveDistributions(finalDistribution, groupDistribution);
-            });
-            
-            finalDistribution.data.forEach(d => d.value += mod);
-
-            return finalDistribution;
-        }
-        
         function convolveDistributions(distA, distB) {
             const newProbs = {};
-            if (!distA || !distA.data || !distB || !distB.data) {
-                return { data: [], type: 'Error' };
-            }
-
+            if (!distA || !distA.data || !distB || !distB.data) return { data: [], type: 'Error' };
             for (const p1 of distA.data) {
                 for (const p2 of distB.data) {
                     const newValue = p1.value + p2.value;
@@ -1237,17 +1210,31 @@
 
         function syncUiToState() { for (const key in playgroundState) { const controlElement = ui.roll_builder.querySelector(`.die-control[data-key="${key}"]`); if (!controlElement) continue; if (key === 'meta') { controlElement.querySelector('[data-type="value"]').value = playgroundState.meta.value; controlElement.querySelector('[data-type="dc"]').value = playgroundState.meta.dc; } else { controlElement.querySelector('[data-type="count"]').value = playgroundState[key].count; controlElement.querySelector('[data-type="dropLow"]').value = playgroundState[key].dropLow; controlElement.querySelector('[data-type="dropHigh"]').value = playgroundState[key].dropHigh; const dieState = playgroundState[key]; const absCount = Math.abs(dieState.count); const maxDrops = absCount > 0 ? absCount - 1 : 0; const totalDrops = dieState.dropLow + dieState.dropHigh; const canIncreaseDrops = absCount === 0 || totalDrops >= maxDrops; controlElement.querySelector('[data-type="dropLow"]').parentElement.querySelector('[data-action="increase"]').disabled = canIncreaseDrops; controlElement.querySelector('[data-type="dropLow"]').parentElement.querySelector('[data-action="decrease"]').disabled = dieState.dropLow <= 0; controlElement.querySelector('[data-type="dropHigh"]').parentElement.querySelector('[data-action="increase"]').disabled = canIncreaseDrops; controlElement.querySelector('[data-type="dropHigh"]').parentElement.querySelector('[data-action="decrease"]').disabled = dieState.dropHigh <= 0; } } }
         
+        // --- CHARTING ---
         function drawDistributionChart(containerEl, infoEl, options) {
             const { data: currentResult, frozenData, rollResult, dc, xAxisLabel, infoText, isCalculatorChart = false } = options;
             
             let currentProbs = [];
             if (hasData(currentResult)) {
-                currentProbs = currentResult.data;
+                // NOTE: The 'isCalculatorChart' flag is used for the Attack and Save calculators
+                // to hide the '0' damage outcome from the graph for a cleaner visualization.
+                // This is because '0' damage from a miss (attack) or a full save (save) is
+                // already represented in the summary stats and can clutter the damage distribution chart.
+                // The Playground chart (isCalculatorChart=false) will always show all outcomes.
+                if (isCalculatorChart) {
+                    currentProbs = currentResult.data.filter(d => d.value !== 0 || currentResult.data.length === 1);
+                } else {
+                    currentProbs = currentResult.data;
+                }
             }
 
             let frozenProbs = [];
             if (hasData(frozenData)) {
-                frozenProbs = frozenData.data;
+                if (isCalculatorChart) {
+                    frozenProbs = frozenData.data.filter(d => d.value !== 0 || frozenData.data.length === 1);
+                } else {
+                    frozenProbs = frozenData.data;
+                }
             }
             
             const hasCurrentData = currentProbs.length > 0;

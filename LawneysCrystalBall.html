@@ -10,6 +10,17 @@
 
   gtag('config', 'G-2Q8QRWJM8E');
 </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Combat Simulator v2.0</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    
+    <style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D&D Combat Simulator v2.0</title>
@@ -137,15 +148,23 @@
         .label-drop-high { color: var(--accent-red); }
         .action-buttons { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
         .btn-action { flex-grow: 1; padding: 15px 20px; font-size: 1.2rem; font-weight: 700; border-width: 2px; border-style: solid; border-radius: 5px; cursor: pointer; background: transparent; transition: all 0.2s; text-transform: uppercase; }
+        .btn-action:disabled {
+            border-color: var(--text-normal);
+            color: var(--text-normal);
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: transparent;
+            box-shadow: none;
+        }
         
         .btn-future { border-color: var(--current-accent); color: var(--current-accent); }
-        .btn-future:hover { background-color: var(--current-accent); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--current-accent); }
+        .btn-future:hover:not(:disabled) { background-color: var(--current-accent); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--current-accent); }
         
         .btn-freeze { border-color: var(--accent-gold); color: var(--accent-gold); }
-        .btn-freeze:hover { background-color: var(--accent-gold); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--accent-gold); }
+        .btn-freeze:hover:not(:disabled) { background-color: var(--accent-gold); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--accent-gold); }
         
         .btn-clear { border-color: var(--text-normal); color: var(--text-normal); }
-        .btn-clear:hover { background-color: var(--text-normal); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--text-normal); }
+        .btn-clear:hover:not(:disabled) { background-color: var(--text-normal); color: var(--bg-dark-void); box-shadow: 0 0 15px var(--text-normal); }
         
         #result-display { background-color: var(--bg-dark-void); padding: 1rem; border-radius: 8px; min-height: 120px; text-align: center; border: 1px solid var(--accent-purple); margin-bottom: 2rem; }
         #result-total { font-size: 3.5rem; font-weight: bold; color: var(--accent-gold); display: block; text-shadow: 0 0 10px var(--accent-gold); }
@@ -160,7 +179,6 @@
         .chart-container { min-height: 300px; width: 100%; position: relative; }
         .chart-message { font-size: 1.2rem; color: var(--text-normal); text-align: center; padding-top: 5rem; }
         .chart-line { stroke: var(--current-accent); stroke-width: 2; fill: none; }
-        /* MODIFIED: Removed stroke-dasharray to make the line solid */
         .frozen-line { stroke: var(--accent-gold); stroke-width: 2; fill: none; opacity: 0.8; }
         .dc-line, .result-line { stroke-width: 2; }
         .dc-line { stroke: var(--text-luminous); stroke-dasharray: 4 4; }
@@ -254,7 +272,7 @@
             <div id="roll-builder" class="roll-builder"></div>
             <div class="action-buttons">
                 <button id="playground-future-button" class="btn-action btn-future">View the Future</button>
-                <button id="playground-freeze-button" class="btn-action btn-freeze">Timeline Comparison</button>
+                <button id="playground-freeze-button" class="btn-action btn-freeze">Freeze for Comparison</button>
                 <button id="playground-clear-button" class="btn-action btn-clear">Clear Slate</button>
             </div>
             <div id="result-display">
@@ -333,7 +351,7 @@
             </div>
             <div class="action-buttons">
                 <button id="attack-future-button" class="btn-action btn-future">View the Future</button>
-                <button id="attack-freeze-button" class="btn-action btn-freeze">Timeline Comparison</button>
+                <button id="attack-freeze-button" class="btn-action btn-freeze">Freeze for Comparison</button>
                 <button id="attack-clear-button" class="btn-action btn-clear">Clear Slate</button>
             </div>
             <div id="attack-sim-result" class="simulation-result"><span class="placeholder">Awaiting a glimpse of the future...</span></div>
@@ -405,7 +423,7 @@
             </div>
             <div class="action-buttons">
                 <button id="save-future-button" class="btn-action btn-future">View the Future</button>
-                <button id="save-freeze-button" class="btn-action btn-freeze">Timeline Comparison</button>
+                <button id="save-freeze-button" class="btn-action btn-freeze">Freeze for Comparison</button>
                 <button id="save-clear-button" class="btn-action btn-clear">Clear Slate</button>
             </div>
             <div id="save-sim-result" class="simulation-result"><span class="placeholder">Awaiting a glimpse of the future...</span></div>
@@ -474,6 +492,7 @@
             loadState();
             setupEventListeners();
             document.querySelectorAll('.preset-manager').forEach(updateDeleteButtonState);
+            updateAllButtonStates();
             const activeTabId = document.querySelector('.tab-content.active')?.id;
             if (activeTabId === 'tab-2') {
                 calculateADPR();
@@ -535,8 +554,13 @@
             ui.roll_builder.addEventListener('click', (event) => { if (!event.target.matches('.btn-adjust')) return; const action = event.target.dataset.action; const input = event.target.parentElement.querySelector('.die-input'); if (!input) return; const currentValue = parseInt(input.value, 10) || 0; input.value = (action === 'increase') ? currentValue + 1 : currentValue - 1; input.dispatchEvent(new Event('input', { bubbles: true })); });
             ui.roll_builder.addEventListener('input', (event) => { if (!event.target.matches('.die-input')) return; const input = event.target; const key = input.closest('.die-control').dataset.key; const type = input.dataset.type; let value = parseInt(input.value, 10); if (isNaN(value)) value = 0; if (key === 'meta') { if (type === 'dc' && value < 0) value = 0; playgroundState.meta[type] = value; } else { if (type !== 'count' && value < 0) value = 0; playgroundState[key][type] = value; const dieState = playgroundState[key]; const absCount = Math.abs(dieState.count); const maxDrops = absCount > 0 ? absCount - 1 : 0; dieState.dropHigh = Math.min(dieState.dropHigh, maxDrops); dieState.dropLow = Math.min(dieState.dropLow, maxDrops - dieState.dropHigh); } updatePlaygroundChart(); syncUiToState(); });
             ui.playground_future_button.addEventListener('click', handleRoll);
-            ui.playground_freeze_button.addEventListener('click', () => { const result = calculateProbabilities(); if (result && result.data && result.data.length > 0) { frozenState.playground = result; updatePlaygroundChart(); } });
-            ui.playground_clear_button.addEventListener('click', () => { for (const key in playgroundState) { playgroundState[key] = (key === 'meta') ? { value: 0, dc: 0 } : { count: 0, dropLow: 0, dropHigh: 0 }; } frozenState.playground = null; simulationResult.playground = null; updatePlaygroundChart(); syncUiToState(); ui.result_total.textContent = 'Awaiting Fate...'; ui.result_total.classList.add('placeholder'); ui.result_details.innerHTML = ''; ui.result_status.innerHTML = ''; debouncedSaveState(); });
+            ui.playground_freeze_button.addEventListener('click', () => { const result = calculateProbabilities(); if (result && result.data && result.data.length > 0) { frozenState.playground = result; updatePlaygroundChart(); updateAllButtonStates(); } });
+            ui.playground_clear_button.addEventListener('click', () => {
+                frozenState.playground = null;
+                simulationResult.playground = null;
+                updatePlaygroundChart();
+                updateAllButtonStates();
+            });
             
             // Attack Tab Listeners
             ['attack-bonus', 'target-ac', 'damage-dice', 'attacks-per-turn'].forEach(id => document.getElementById(id).addEventListener('input', calculateADPR));
@@ -547,8 +571,9 @@
                 const params = getAttackParamsFromUI();
                 frozenState.attack = { params: params }; 
                 calculateADPR();
+                updateAllButtonStates();
             });
-            ui.attack_clear_button.addEventListener('click', () => { frozenState.attack = null; simulationResult.attack = null; ui.attack_sim_result.innerHTML = `<span class="placeholder">Awaiting a glimpse of the future...</span>`; calculateADPR(); });
+            ui.attack_clear_button.addEventListener('click', () => { frozenState.attack = null; simulationResult.attack = null; ui.attack_sim_result.innerHTML = `<span class="placeholder">Awaiting a glimpse of the future...</span>`; calculateADPR(); updateAllButtonStates(); });
 
             // Save Tab Listeners
             ['save-dc', 'save-damage', 'target-save-bonus', 'num-targets'].forEach(id => document.getElementById(id).addEventListener('input', calculateSaveDamage));
@@ -559,14 +584,26 @@
                 const result = getCurrentSaveDistribution();
                 if(result) {
                     frozenState.save = result.distribution;
+                    frozenState.save.params = {
+                        damage: document.getElementById('save-damage').value,
+                        dc: document.getElementById('save-dc').value,
+                    };
                 }
                 calculateSaveDamage(); 
+                updateAllButtonStates();
             });
-            ui.save_clear_button.addEventListener('click', () => { frozenState.save = null; simulationResult.save = null; ui.save_sim_result.innerHTML = `<span class="placeholder">Awaiting a glimpse of the future...</span>`; calculateSaveDamage(); });
+            ui.save_clear_button.addEventListener('click', () => { frozenState.save = null; simulationResult.save = null; ui.save_sim_result.innerHTML = `<span class="placeholder">Awaiting a glimpse of the future...</span>`; calculateSaveDamage(); updateAllButtonStates(); });
 
             window.addEventListener('resize', () => { const activeTab = document.querySelector('.tab-content.active').id; if (activeTab === 'tab-1') updatePlaygroundChart(); if (activeTab === 'tab-2') calculateADPR(); if (activeTab === 'tab-3') calculateSaveDamage(); });
         }
         
+        // --- UI STATE MANAGEMENT ---
+        function updateAllButtonStates() {
+            ui.playground_clear_button.disabled = !frozenState.playground;
+            ui.attack_clear_button.disabled = !frozenState.attack;
+            ui.save_clear_button.disabled = !frozenState.save;
+        }
+
         // --- PERSISTENCE & PRESET FUNCTIONS ---
         function saveState() {
             const state = {
@@ -628,7 +665,7 @@
                 }
 
                 if(state.frozenAttack) frozenState.attack = state.frozenAttack;
-                if(state.frozenSave) frozenState.save = frozenState.save;
+                if(state.frozenSave) frozenState.save = state.frozenSave;
                 
                 if (state.save) {
                     for(const [id, value] of Object.entries(state.save)) {
@@ -939,7 +976,14 @@
                     infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`;
                 }
                 
-                const chartOptions = { data: result, frozenData: frozenState.playground, rollResult: simulationResult.playground, dc: playgroundState.meta.dc, xAxisLabel: 'Sum', yAxisLabel: 'Probability', yAxisFormat: 'percent', infoText, isCalculatorChart: false };
+                let subtitle = '';
+                if (hasData(result)) subtitle += `<tspan class="current-subtitle-text">Current: ${result.type}</tspan>`;
+                if (hasData(frozenState.playground)) {
+                    if (subtitle) subtitle += ' | ';
+                    subtitle += `<tspan class="frozen-subtitle-text">Alternate: ${frozenState.playground.type}</tspan>`;
+                }
+
+                const chartOptions = { data: result, frozenData: frozenState.playground, rollResult: simulationResult.playground, dc: playgroundState.meta.dc, xAxisLabel: 'Sum', yAxisLabel: 'Probability', yAxisFormat: 'percent', infoText, subtitle, isCalculatorChart: false };
                 drawDistributionChart(ui.playground_chart_container, ui.playground_chart_info, chartOptions);
             }, 10);
         }
@@ -983,17 +1027,14 @@
             
             const frozenStats = getStatsFromDistribution(frozenDistributionForChart);
             if (frozenStats) { if (infoText) infoText += '<br>'; infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`; }
+            
+            const buildLabel = p => `${p.damageDice}, +${p.atkBonus} bonus`;
+            let subtitle = `<tspan class="current-subtitle-text">Current: ${buildLabel(currentParams)}</tspan>`;
+            if (frozenState.attack && frozenState.attack.params) {
+                subtitle += ` | <tspan class="frozen-subtitle-text">Alternate: ${buildLabel(frozenState.attack.params)}</tspan>`;
+            }
 
-            const chartOptions = { 
-                data: fullDistribution.distribution, 
-                frozenData: frozenDistributionForChart, 
-                rollResult: simulationResult.attack, 
-                xAxisLabel: 'Total Damage', 
-                yAxisLabel: 'Probability',
-                yAxisFormat: 'percent',
-                infoText, 
-                isCalculatorChart: true 
-            };
+            const chartOptions = { data: fullDistribution.distribution, frozenData: frozenDistributionForChart, rollResult: simulationResult.attack, xAxisLabel: 'Total Damage', yAxisLabel: 'Probability', yAxisFormat: 'percent', infoText, subtitle, isCalculatorChart: true };
             drawDistributionChart(ui.adpr_chart_container, ui.adpr_chart_info, chartOptions);
         }
 
@@ -1020,31 +1061,20 @@
             if (frozenState.attack && frozenState.attack.params) {
                 frozenChartData = calculateLine(frozenState.attack.params);
             }
-
-            let infoText = '';
-            const buildLabel = p => `${p.numAttacks}x ${p.damageDice} @ +${p.atkBonus}`;
-            infoText += `<span class="current-info-text">Current: ${buildLabel(currentParams)}</span>`;
-            if (frozenState.attack && frozenState.attack.params) {
-                infoText += `<br><span class="frozen-info-text">Alternate: ${buildLabel(frozenState.attack.params)}</span>`;
-            }
             
-            const chartOptions = {
-                data: currentChartData,
-                frozenData: frozenChartData,
-                xAxisLabel: 'Target AC',
-                yAxisLabel: 'Average Damage',
-                yAxisFormat: 'number',
-                infoText: infoText,
-                isCalculatorChart: false,
-            };
+            const buildLabel = p => `${p.damageDice}, +${p.atkBonus} bonus`;
+            let subtitle = `<tspan class="current-subtitle-text">Current: ${buildLabel(currentParams)}</tspan>`;
+            if (frozenState.attack && frozenState.attack.params) {
+                subtitle += ` | <tspan class="frozen-subtitle-text">Alternate: ${buildLabel(frozenState.attack.params)}</tspan>`;
+            }
+
+            const chartOptions = { data: currentChartData, frozenData: frozenChartData, xAxisLabel: 'Target AC', yAxisLabel: 'Average Damage', yAxisFormat: 'number', infoText: '', subtitle, isCalculatorChart: false };
             drawDistributionChart(ui.adpr_chart_container, ui.adpr_chart_info, chartOptions);
         }
 
         function updateAdprSummary(params, referenceAc) {
             const singleAttackResult = getSingleAttackDistribution({ ...params, targetAC: referenceAc });
             
-            const attackBonusInput = document.getElementById('attack-bonus');
-            const damageInput = document.getElementById('damage-dice');
             const errorDisplay = document.getElementById('adpr-error');
 
             if (!singleAttackResult) {
@@ -1065,8 +1095,8 @@
             document.getElementById('avg-damage').textContent = summary.avgDamage.toFixed(1);
             document.getElementById('avg-crit-damage').textContent = summary.avgCritDamage.toFixed(1);
             errorDisplay.textContent = '';
-            attackBonusInput.classList.remove('invalid');
-            damageInput.classList.remove('invalid');
+            document.getElementById('attack-bonus').classList.remove('invalid');
+            document.getElementById('damage-dice').classList.remove('invalid');
         }
 
         function calculateAdprForAc(params, ac) {
@@ -1104,8 +1134,6 @@
 
         function getSingleAttackDistribution(params) {
             const { atkBonus, targetAC, damageDice, advState } = params;
-            const damageInput = document.getElementById('damage-dice'); 
-            const attackBonusInput = document.getElementById('attack-bonus');
             const errorDisplay = document.getElementById('adpr-error'); 
             
             const damageData = parseDamageString(damageDice); 
@@ -1115,7 +1143,7 @@
                               (atkBonusData.groups.reduce((a,g) => a + Math.abs(g.count), 0));
 
             if (totalDice > CALCULATOR_DICE_LIMIT) {
-                errorDisplay.textContent = `Calculation too complex. Max ${CALCULATOR_DICE_LIMIT} dice allowed.`;
+                errorDisplay.textContent = `Calculation too complex. Max ${CALCULATOR_DICE_LIMIT} dice.`;
                 ui.adpr_chart_container.innerHTML = `<p class="chart-message">Calculation Too Complex</p>`;
                 ui.adpr_chart_info.innerHTML = '';
                 return null;
@@ -1124,12 +1152,12 @@
             let hasError = false;
             let errorMessage = '';
             if (damageData.error) {
-                damageInput.classList.add('invalid');
+                document.getElementById('damage-dice').classList.add('invalid');
                 errorMessage += 'Invalid Damage format. ';
                 hasError = true;
             }
             if (atkBonusData.error) {
-                attackBonusInput.classList.add('invalid');
+                document.getElementById('attack-bonus').classList.add('invalid');
                 errorMessage += 'Invalid Attack Bonus format.';
                 hasError = true;
             }
@@ -1180,10 +1208,7 @@
             critDamageDist.data.forEach(d => { finalDist[d.value] = (finalDist[d.value] || 0) + d.probability * totalCritChance; });
             finalDist[0] = (finalDist[0] || 0) + totalMissChance;
 
-            const chartData = { 
-                data: Object.entries(finalDist).map(([val, prob]) => ({ value: parseInt(val), probability: prob })),
-                type: damageDist.type === 'Constant' && bonusDistribution.type === 'Constant' ? 'Constant' : 'Combined'
-            };
+            const chartData = { data: Object.entries(finalDist).map(([val, prob]) => ({ value: parseInt(val), probability: prob })) };
             return { distribution: chartData, summary: { adpr, critChance: totalCritChance, hitChance: totalHitChance, missChance: totalMissChance, avgDamage, avgCritDamage } };
         }
 
@@ -1207,7 +1232,17 @@
             const frozenStats = getStatsFromDistribution(frozenState.save);
             if (frozenStats) { if (infoText) infoText += '<br>'; infoText += `<span class="frozen-info-text">Alternate - Range: ${frozenStats.min} to ${frozenStats.max} | Average: ${frozenStats.average.toFixed(2)}</span>`; }
 
-            const chartOptions = { data: distribution, frozenData: frozenState.save, rollResult: simulationResult.save, xAxisLabel: 'Total Damage', yAxisLabel: 'Probability', yAxisFormat: 'percent', infoText, isCalculatorChart: true };
+            const currentSaveParams = {
+                damage: document.getElementById('save-damage').value,
+                dc: document.getElementById('save-dc').value
+            };
+            const buildLabel = p => `${p.damage}, DC ${p.dc}`;
+            let subtitle = `<tspan class="current-subtitle-text">Current: ${buildLabel(currentSaveParams)}</tspan>`;
+            if (frozenState.save && frozenState.save.params) {
+                subtitle += ` | <tspan class="frozen-subtitle-text">Alternate: ${buildLabel(frozenState.save.params)}</tspan>`;
+            }
+
+            const chartOptions = { data: distribution, frozenData: frozenState.save, rollResult: simulationResult.save, xAxisLabel: 'Total Damage', yAxisLabel: 'Probability', yAxisFormat: 'percent', infoText, subtitle, isCalculatorChart: true };
             drawDistributionChart(ui.save_chart_container, ui.save_chart_info, chartOptions);
         }
 
@@ -1223,7 +1258,7 @@
                               (saveBonusData.groups.reduce((a,g) => a + Math.abs(g.count), 0));
             
             if (totalDice > CALCULATOR_DICE_LIMIT) {
-                errorDisplay.textContent = `Calculation too complex. Max ${CALCULATOR_DICE_LIMIT} dice allowed.`;
+                errorDisplay.textContent = `Calculation too complex. Max ${CALCULATOR_DICE_LIMIT} dice.`;
                 ui.save_chart_container.innerHTML = `<p class="chart-message">Calculation Too Complex</p>`;
                 ui.save_chart_info.innerHTML = '';
                 return null;
@@ -1295,7 +1330,6 @@
 
             const singleTargetChartData = {
                 data: Object.entries(singleTargetFinalDist).map(([val, prob]) => ({ value: parseInt(val), probability: prob })),
-                type: damageDist.type === 'Constant' && saveBonusDistribution.type === 'Constant' ? 'Constant' : 'Combined'
             };
 
             let combinedDist = singleTargetChartData;
@@ -1312,37 +1346,58 @@
         // --- SIMULATION FUNCTIONS ---
         function simulateSingleAttack() {
             const params = getAttackParamsFromUI();
-            const damageData = parseDamageString(params.damageDice); if (damageData.error) return;
+            const damageData = parseDamageString(params.damageDice);
+            const atkBonusData = parseDamageString(String(params.atkBonus));
+
+            if (damageData.error || atkBonusData.error) {
+                ui.attack_sim_result.innerHTML = `<span class="failure">Invalid formula in inputs.</span>`;
+                return;
+            }
             
             let grandTotalDamage = 0;
             const resultParts = [];
 
             for (let i = 0; i < params.numAttacks; i++) {
-                let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
-                let finalRoll = d20roll1; let rollDetail = `d20: ${d20roll1}`;
+                let d20roll1 = Math.ceil(Math.random() * 20);
+                let d20roll2 = Math.ceil(Math.random() * 20);
+                let finalRoll = d20roll1;
+                let rollDetail = `d20: ${d20roll1}`;
                 if (params.advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20(Adv): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
                 if (params.advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20(Dis): [${d20roll1},${d20roll2}]➔${finalRoll}`; }
                 
-                let attackResult; let damage = 0;
-                if (finalRoll === 1) { attackResult = `<span class="failure">Crit Miss!</span> (0 dmg)`; damage = 0; }
-                else if (finalRoll === 20) {
+                const { total: rolledBonus, detail: bonusDetail } = getDiceRoll(atkBonusData);
+                const bonusString = (rolledBonus >= 0) ? `+${bonusDetail}` : `${bonusDetail}`;
+
+                let attackResult;
+                let damage = 0;
+                if (finalRoll === 1) {
+                    attackResult = `<span class="failure">Crit Miss!</span> (0 dmg)`;
+                    damage = 0;
+                } else if (finalRoll === 20) {
                     const critDamageData = { 
                         groups: damageData.groups.map(g => ({...g, count: g.count * 2})), 
                         mod: damageData.mod 
                     };
                     const { total: dmg, detail } = getDiceRoll(critDamageData);
-                    attackResult = `<span class="success">Crit Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
-                } else if (finalRoll + params.atkBonus >= params.targetAC) {
+                    attackResult = `<span class="success">Crit Hit!</span> (${detail}=${dmg} dmg)`;
+                    damage = dmg;
+                } else if (finalRoll + rolledBonus >= params.targetAC) {
                     const { total: dmg, detail } = getDiceRoll(damageData);
-                    attackResult = `<span class="success">Hit!</span> (${detail}=${dmg} dmg)`; damage = dmg;
-                } else { attackResult = `<span class="failure">Miss!</span> (0 dmg)`; damage = 0; }
+                    attackResult = `<span class="success">Hit!</span> (${detail}=${dmg} dmg)`;
+                    damage = dmg;
+                } else {
+                    attackResult = `<span class="failure">Miss!</span> (0 dmg)`;
+                    damage = 0;
+                }
                 
-                resultParts.push(`Attack ${i+1}: ${rollDetail}+${params.atkBonus} vs AC ${params.targetAC} ➔ ${attackResult}`);
+                resultParts.push(`Attack ${i+1}: ${rollDetail}${bonusString} vs AC ${params.targetAC} ➔ ${attackResult}`);
                 grandTotalDamage += damage;
             }
 
             let finalHtml = resultParts.join('<br>');
-            if (params.numAttacks > 1) { finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`; }
+            if (params.numAttacks > 1) {
+                finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`;
+            }
             
             ui.attack_sim_result.innerHTML = finalHtml;
             simulationResult.attack = grandTotalDamage;
@@ -1350,11 +1405,15 @@
         }
         
         function simulateSingleSave() {
-            const damageData = parseDamageString(document.getElementById('save-damage').value); 
-            if (damageData.error) return;
+            const damageData = parseDamageString(document.getElementById('save-damage').value);
+            const saveBonusData = parseDamageString(document.getElementById('target-save-bonus').value);
+
+            if (damageData.error || saveBonusData.error) {
+                ui.save_sim_result.innerHTML = `<span class="failure">Invalid formula in inputs.</span>`;
+                return;
+            }
 
             const saveDC = parseInt(document.getElementById('save-dc').value) || 0; 
-            const saveBonus = parseInt(document.getElementById('target-save-bonus').value) || 0; 
             const advState = parseInt(document.querySelector('input[name="save-advantage"]:checked').value); 
             const saveOutcome = parseFloat(document.querySelector('input[name="save-outcome"]:checked').value);
             const numTargets = parseInt(document.getElementById('num-targets').value) || 1;
@@ -1363,26 +1422,33 @@
             const resultParts = [];
 
             for (let i = 0; i < numTargets; i++) {
-                let d20roll1 = Math.ceil(Math.random() * 20); let d20roll2 = Math.ceil(Math.random() * 20);
-                let finalRoll = d20roll1; let rollDetail = `d20 Roll: ${d20roll1}`;
+                let d20roll1 = Math.ceil(Math.random() * 20);
+                let d20roll2 = Math.ceil(Math.random() * 20);
+                let finalRoll = d20roll1;
+                let rollDetail = `d20 Roll: ${d20roll1}`;
                 if (advState === 1) { finalRoll = Math.max(d20roll1, d20roll2); rollDetail = `d20 (Adv): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
                 if (advState === -1) { finalRoll = Math.min(d20roll1, d20roll2); rollDetail = `d20 (Dis): [${d20roll1}, ${d20roll2}] ➔ ${finalRoll}`; }
                 
+                const { total: rolledSaveBonus, detail: saveBonusDetail } = getDiceRoll(saveBonusData);
                 const { total: fullDmg, detail: dmgDetail } = getDiceRoll(damageData);
-                let resultText; let damageTaken = 0;
-                if (finalRoll + saveBonus >= saveDC) {
+                
+                let resultText;
+                let damageTaken = 0;
+                if (finalRoll + rolledSaveBonus >= saveDC) {
                     damageTaken = Math.floor(fullDmg * saveOutcome);
-                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) ➔ <span class="success">Success!</span> Damage: ${fullDmg}*${saveOutcome} = ${damageTaken}.`;
+                    resultText = `Target ${i+1} (${rollDetail}+${saveBonusDetail} vs DC ${saveDC}) ➔ <span class="success">Success!</span> Damage: ${fullDmg}*${saveOutcome} = ${damageTaken}.`;
                 } else {
                     damageTaken = fullDmg;
-                    resultText = `Target ${i+1} (${rollDetail}+${saveBonus} vs DC ${saveDC}) ➔ <span class="failure">Failure!</span> Damage: ${dmgDetail} = ${damageTaken}.`;
+                    resultText = `Target ${i+1} (${rollDetail}+${saveBonusDetail} vs DC ${saveDC}) ➔ <span class="failure">Failure!</span> Damage: ${dmgDetail} = ${damageTaken}.`;
                 }
                 resultParts.push(resultText);
                 grandTotalDamage += damageTaken;
             }
 
             let finalHtml = resultParts.join('<br>');
-            if (numTargets > 1) { finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`; }
+            if (numTargets > 1) {
+                finalHtml += `<hr><b>Total Damage: ${grandTotalDamage}</b>`;
+            }
 
             ui.save_sim_result.innerHTML = finalHtml;
             simulationResult.save = grandTotalDamage;
@@ -1439,15 +1505,14 @@
                 }
             }
             const newData = Object.entries(newProbs).map(([val, prob]) => ({ value: parseInt(val), probability: prob }));
-            const type = (distA.type === distB.type && distA.type !== 'Constant') ? distA.type : 'Combined';
-            return { data: newData, type: type };
+            return { data: newData };
         }
 
         function syncUiToState() { for (const key in playgroundState) { const controlElement = ui.roll_builder.querySelector(`.die-control[data-key="${key}"]`); if (!controlElement) continue; if (key === 'meta') { controlElement.querySelector('[data-type="value"]').value = playgroundState.meta.value; controlElement.querySelector('[data-type="dc"]').value = playgroundState.meta.dc; } else { controlElement.querySelector('[data-type="count"]').value = playgroundState[key].count; controlElement.querySelector('[data-type="dropLow"]').value = playgroundState[key].dropLow; controlElement.querySelector('[data-type="dropHigh"]').value = playgroundState[key].dropHigh; const dieState = playgroundState[key]; const absCount = Math.abs(dieState.count); const maxDrops = absCount > 0 ? absCount - 1 : 0; const totalDrops = dieState.dropLow + dieState.dropHigh; const canIncreaseDrops = absCount === 0 || totalDrops >= maxDrops; controlElement.querySelector('[data-type="dropLow"]').parentElement.querySelector('[data-action="increase"]').disabled = canIncreaseDrops; controlElement.querySelector('[data-type="dropLow"]').parentElement.querySelector('[data-action="decrease"]').disabled = dieState.dropLow <= 0; controlElement.querySelector('[data-type="dropHigh"]').parentElement.querySelector('[data-action="increase"]').disabled = canIncreaseDrops; controlElement.querySelector('[data-type="dropHigh"]').parentElement.querySelector('[data-action="decrease"]').disabled = dieState.dropHigh <= 0; } } }
         
         // --- CHARTING ---
         function drawDistributionChart(containerEl, infoEl, options) {
-            const { data: currentResult, frozenData, rollResult, dc, xAxisLabel, yAxisLabel, yAxisFormat, infoText, isCalculatorChart = false } = options;
+            const { data: currentResult, frozenData, rollResult, dc, xAxisLabel, yAxisLabel, yAxisFormat, infoText, subtitle, isCalculatorChart = false } = options;
             
             let currentProbs = [];
             if (hasData(currentResult)) {
@@ -1500,17 +1565,9 @@
             let dcElements = ''; if (hasCurrentData && dc > 0 && dc >= minSum && dc <= maxSum && yAxisFormat === 'percent') { const successChance = currentProbs.filter(p => p.value >= dc).reduce((acc, p) => acc + p.probability, 0); const dc_x = margin.left + ((dc - minSum) / (maxSum - minSum || 1)) * chartWidth; dcElements = `<line class="dc-line" x1="${dc_x}" y1="${margin.top}" x2="${dc_x}" y2="${margin.top + chartHeight}" /><text class="dc-text" x="${dc_x + 4}" y="${margin.top + 12}">DC ${dc}</text><text class="dc-text" x="${dc_x + 4}" y="${margin.top + 24}">Success: ${(successChance * 100).toFixed(1)}%</text>`; }
             let resultElement = ''; if (hasCurrentData && rollResult !== null && rollResult >= minSum && rollResult <= maxSum && yAxisFormat === 'percent') { const result_x = margin.left + ((rollResult - minSum) / (maxSum - minSum || 1)) * chartWidth; const percentile = currentProbs.filter(p => p.value <= rollResult).reduce((acc, p) => acc + p.probability, 0); const percentileText = (percentile * 100).toFixed(1); resultElement = `<line class="result-line" x1="${result_x}" y1="${margin.top}" x2="${result_x}" y2="${margin.top + chartHeight}" /><text class="result-text" x="${result_x + 4}" y="${margin.top + chartHeight - 15}"><tspan x="${result_x + 4}" dy="0">Result: ${rollResult}</tspan><tspan x="${result_x + 4}" dy="1.2em">(${percentileText}%)</tspan></text>`; }
             
-            let subtitleSpans = '';
-            if (hasData(currentResult)) {
-                subtitleSpans += `<tspan class="current-subtitle-text">Current: ${currentResult.type}</tspan>`;
-            }
-            if (hasData(frozenData)) {
-                if (subtitleSpans) subtitleSpans += ` | `;
-                subtitleSpans += `<tspan class="frozen-subtitle-text">Alternate Timeline: ${frozenData.type}</tspan>`;
-            }
-            const subtitle = `<text class="chart-subtitle" x="${margin.left}" y="${margin.top - 8}">${subtitleSpans}</text>`;
+            const subtitleElement = `<text class="chart-subtitle" x="${margin.left}" y="${margin.top - 8}">${subtitle || ''}</text>`;
             
-            containerEl.innerHTML = `<svg width="${svgWidth}" height="${svgHeight}">${getAxisHTML(allPoints, maxYValue, margin, chartWidth, chartHeight, svgHeight, minSum, maxSum, xAxisLabel, yAxisLabel, yAxisFormat)}${subtitle}${frozenPath}${currentPath}${frozenCircles}${currentCircles}${dcElements}${resultElement}</svg>`;
+            containerEl.innerHTML = `<svg width="${svgWidth}" height="${svgHeight}">${getAxisHTML(allPoints, maxYValue, margin, chartWidth, chartHeight, svgHeight, minSum, maxSum, xAxisLabel, yAxisLabel, yAxisFormat)}${subtitleElement}${frozenPath}${currentPath}${frozenCircles}${currentCircles}${dcElements}${resultElement}</svg>`;
         }
         function getAxisHTML(points, maxYValue, margin, chartWidth, chartHeight, svgHeight, minSum, maxSum, xAxisLabel, yAxisLabel, yAxisFormat) {
             const yAxisTicks = [...Array(6)].map((_, i) => {

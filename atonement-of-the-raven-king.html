@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kylar's Crits</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+    @keyframes pop-in {
+        0% { transform: scale(0.5); opacity: 0; }
+        70% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop-in {
+        animation: pop-in 0.3s ease-out forwards;
+    }
+
+    @keyframes slide-in-fade {
+        from { transform: translateY(10px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-fade-in {
+        animation: slide-in-fade 0.5s ease-out forwards;
+    }
+    
+    @keyframes crit-glow-purple {
+        0%, 100% { filter: drop-shadow(0 0 4px #a78bfa) drop-shadow(0 0 6px #a78bfa); }
+        50% { filter: drop-shadow(0 0 8px #c4b5fd) drop-shadow(0 0 12px #c4b5fd); }
+    }
+    .animate-crit-glow-purple {
+        animation: crit-glow-purple 1.5s ease-in-out infinite;
+    }
+    @keyframes crit-glow-red {
+        0%, 100% { filter: drop-shadow(0 0 4px #ef4444) drop-shadow(0 0 6px #ef4444); }
+        50% { filter: drop-shadow(0 0 8px #f87171) drop-shadow(0 0 12px #f87171); }
+    }
+    .animate-crit-glow-red {
+        animation: crit-glow-red 1.5s ease-in-out infinite;
+    }
+
+    @keyframes die-flip {
+        from { transform: rotateY(0deg); }
+        to { transform: rotateY(360deg); }
+    }
+    .animate-die-flip {
+        animation: die-flip 0.5s ease-in-out forwards;
+    }
+
+    @keyframes poison-fade {
+        0% { opacity: 0; }
+        50% { opacity: 0.6; }
+        100% { opacity: 0; }
+    }
+    .animate-poison-fade {
+        animation: poison-fade 0.8s ease-in-out forwards;
+    }
+    
+    @keyframes new-slot-glow {
+        0% { box-shadow: 0 0 0 0 rgba(196, 181, 253, 0.7); transform: scale(1); }
+        50% { box-shadow: 0 0 20px 10px rgba(196, 181, 253, 0); transform: scale(1.1); }
+        100% { box-shadow: 0 0 0 0 rgba(196, 181, 253, 0); transform: scale(1); }
+    }
+    .animate-new-slot-glow {
+        animation: new-slot-glow 0.8s ease-in-out forwards;
+    }
+
+    @keyframes snare-capture {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        30% {
+            transform: scale(0.9); /* Net constricts */
+        }
+        100% {
+            transform: scale(0);
+            opacity: 0;
+        }
+    }
+    .animate-snare-capture {
+        animation: snare-capture 0.6s ease-in forwards;
+    }
+    
+    @keyframes mislead-throw-away {
+        0% {
+            transform: translate(0, 0) rotate(0) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(150px, -80px) rotate(270deg) scale(0.5);
+            opacity: 0;
+        }
+    }
+    .animate-mislead-throw-away {
+        animation: mislead-throw-away 0.6s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+    }
+</style>
+<link rel="stylesheet" href="/index.css">
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "recharts": "https://esm.sh/recharts@^3.1.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-CnUra4o6.js"></script>
+</head>
+  <body class="bg-slate-900 text-slate-200">
+    <div id="root"></div>
+  </body>
+</html>

@@ -10,8 +10,8 @@ const defaultCommunityPresets: CommunityPreset[] = [
     {
         id: 'community-preset-1',
         name: 'Stormy Seas',
-        author: 'Captain Alvyn',
-        votes: 127,
+        author: 'kenttk421',
+        votes: 0,
         hotkey: null,
         music: { id: 'music-ocean', tag: 'Tension', volume: 1, isMuted: false },
         ambiance: {
@@ -27,8 +27,8 @@ const defaultCommunityPresets: CommunityPreset[] = [
     {
         id: 'community-preset-2',
         name: 'The Underdark',
-        author: 'Drizzt',
-        votes: 89,
+        author: 'kenttk421',
+        votes: 0,
         hotkey: null,
         music: { id: 'music-underdark', tag: 'Exploration', volume: 0.6, isMuted: false },
         ambiance: {
@@ -44,8 +44,8 @@ const defaultCommunityPresets: CommunityPreset[] = [
     {
         id: 'community-preset-3',
         name: 'Feywild Night',
-        author: 'Willowisp',
-        votes: 42,
+        author: 'kenttk421',
+        votes: 0,
         hotkey: null,
         music: { id: 'music-feywild', tag: 'Magical', volume: 0.8, isMuted: false },
         ambiance: {

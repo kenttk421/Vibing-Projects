@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script>
+    // This script is crucial for GitHub Pages hosting of SPAs
+    (function() {
+      // Get the path requested by the browser
+      var path = window.location.pathname;
+
+      // Check if the path is a clean URL we want to handle
+      // This is a simple fix that automatically redirects
+      // the browser to the same URL, but now as a hash (#) fragment,
+      // which prevents another 404 and lets React Router handle it.
+      // After React Router processes it, it cleans the hash out.
+      
+      // We look at the GitHub Pages repository name from the path.
+      // This is often needed if the site is hosted at example.github.io/repo-name/
+      var segmentCount = 0; // Set to 1 if your repo name is in the URL, 0 if using a custom domain.
+      
+      // Simple path redirect logic:
+      if (path.split('/').length > (2 + segmentCount)) { 
+        // If the path suggests it's an internal route (like /about or /contact)
+        var pathSegments = path.split('/');
+        // Reconstruct the base URL to include the repo name if necessary
+        var baseUrl = pathSegments.slice(0, segmentCount + 1).join('/') + '/';
+
+        // Redirect to the base URL with the requested path in the hash
+        window.location.replace(baseUrl + '#' + path);
+      } else {
+        // If it's a simple path (like the root), just ensure the base index is loaded
+        // Alternatively, for the simplest setup, you can just redirect everything to /
+        // window.location.replace('/');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <p>If you are not redirected automatically, <a id="redirect-link" href="#">click here</a>.</p>
+  <script>
+      // Fallback for non-JS environments (though React needs JS anyway)
+      document.getElementById('redirect-link').href = window.location.pathname;
+  </script>
+</body>
+</html>

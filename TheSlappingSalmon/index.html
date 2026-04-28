@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>The Slapping Salmon Game-Hall</title>
+    <meta name="title" content="The Slapping Salmon Game-Hall" />
+    <meta name="description" content="A curated collection of tavern games and gambling mechanics designed for DMs and players to bring life to their campaigns." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Slapping Salmon Game-Hall" />
+    <meta property="og:description" content="A curated collection of tavern games and gambling mechanics designed for DMs and players to bring life to their campaigns. Explore, test, and adapt these games for your own table." />
+    <meta property="og:image" content="https://ais-dev-zqkhoyr4wcuuja7qlo2m44-104348620117.us-east1.run.app/assets/slapping-salmon/og-image.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="The Slapping Salmon Game-Hall" />
+    <meta property="twitter:description" content="A curated collection of tavern games and gambling mechanics designed for DMs and players to bring life to their campaigns." />
+    <meta property="twitter:image" content="https://ais-dev-zqkhoyr4wcuuja7qlo2m44-104348620117.us-east1.run.app/assets/slapping-salmon/og-image.png" />
+
+    <meta name="theme-color" content="#0a192f" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              parchment: '#f5e6c8',
+              wood: '#1a2b3c', // Deep River Blue
+              gold: '#ff8c69', // Salmon Pink
+              'gold-dim': '#e67e5d', // Darker Salmon
+              river: '#3d5a80', // River Blue
+              foam: '#e0fbfc', // River Foam
+            },
+            fontFamily: {
+              serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #0a192f; // Deepest Water
+        color: #f5e6c8;
+      }
+      .river-texture {
+        background-image: repeating-linear-gradient(45deg, #1a2b3c 0, #1a2b3c 1px, #1e3a5f 0, #1e3a5f 50%);
+        background-size: 20px 20px;
+      }
+      .dice-roll {
+        animation: roll 0.8s ease-out;
+      }
+      @keyframes roll {
+        0% { transform: rotate(0deg) scale(0.8); }
+        50% { transform: rotate(180deg) scale(1.1); }
+        100% { transform: rotate(360deg) scale(1); }
+      }
+
+      /* AI Action Animations */
+      .animate-coin-toss {
+        animation: coinToss 1s forwards cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      @keyframes coinToss {
+        0% { transform: translate(0, 0) scale(1); opacity: 1; }
+        100% { transform: translate(-120%, -50px) scale(0.5); opacity: 0; }
+      }
+
+      .animate-knock {
+        animation: knock 0.5s ease-in-out;
+      }
+      @keyframes knock {
+        0% { transform: scale(0.9); opacity: 0; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Gold Change Notification */
+      .animate-float-out {
+        animation: floatOut 2.5s ease-out forwards;
+      }
+      @keyframes floatOut {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        20% { transform: translateY(-5px) scale(1.2); opacity: 1; }
+        100% { transform: translateY(-30px) scale(1); opacity: 0; }
+      }
+
+      /* Warlord's Gambit Shatter Effect */
+      @keyframes crackLeft {
+        0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+        20% { transform: translate(-4px, 2px) rotate(-5deg); }
+        100% { transform: translate(-40px, 80px) rotate(-60deg); opacity: 0; }
+      }
+      @keyframes crackRight {
+        0% { transform: translate(0, 0) rotate(0); opacity: 1; }
+        20% { transform: translate(4px, -2px) rotate(5deg); }
+        100% { transform: translate(40px, 80px) rotate(60deg); opacity: 0; }
+      }
+      .animate-crack-left {
+        animation: crackLeft 0.8s forwards ease-in;
+        clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
+      }
+      .animate-crack-right {
+        animation: crackRight 0.8s forwards ease-in;
+        clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%);
+      }
+
+      /* Promotion Effect */
+      @keyframes levelUp {
+        0% { transform: scale(1.25); filter: brightness(1) drop-shadow(0 0 0px gold); }
+        50% { transform: scale(1.4); filter: brightness(1.3) drop-shadow(0 0 15px gold); }
+        100% { transform: scale(1.25); filter: brightness(1) drop-shadow(0 0 5px gold); }
+      }
+      .animate-level-up {
+        animation: levelUp 1s ease-in-out infinite alternate;
+        z-index: 10;
+      }
+      .vertical-text {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+      }
+    </style>
+
+<link rel="stylesheet" href="/index.css">
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.31.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-_HSVLhwp.js"></script>
+</head>
+  <body>
+    <div id="root"></div>
+</body>
+</html>

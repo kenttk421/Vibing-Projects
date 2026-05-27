@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Q8QRWJM8E"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-2Q8QRWJM8E');
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
@@ -22,7 +31,7 @@
     <meta property="twitter:image" content="https://ais-dev-zqkhoyr4wcuuja7qlo2m44-104348620117.us-east1.run.app/assets/slapping-salmon/og-image.png" />
 
     <meta name="theme-color" content="#0a192f" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -30,7 +39,7 @@
           extend: {
             colors: {
               parchment: '#f5e6c8',
-              wood: '#1a2b3c', // Deep River Blue test
+              wood: '#1a2b3c', // Deep River Blue
               gold: '#ff8c69', // Salmon Pink
               'gold-dim': '#e67e5d', // Darker Salmon
               river: '#3d5a80', // River Blue
@@ -144,8 +153,8 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="./index.js"></script>
-  <link rel="stylesheet" crossorigin href="./index.css">
+  <script type="module" crossorigin src="/index.js"></script>
+  <link rel="stylesheet" crossorigin href="/index.css">
 </head>
   <body>
     <div id="root"></div>

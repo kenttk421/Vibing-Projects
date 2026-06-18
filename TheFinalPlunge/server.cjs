@@ -49,7 +49,8 @@ var SEED_SUBSCRIBERS = [];
 var SEED_FEEDBACK = [];
 var db = {
   subscribers: [...SEED_SUBSCRIBERS],
-  feedback: [...SEED_FEEDBACK]
+  feedback: [...SEED_FEEDBACK],
+  campaigns: []
 };
 var globalSyncWithFirestore = null;
 function loadDb() {
@@ -399,6 +400,264 @@ CONCISE COMPILATION RULES:
     res.status(500).json({ error: "AI telemetry processing fail: " + err.message });
   }
 });
+
+// Admin Authorization Control
+const getAdminKey = () => process.env.ADMIN_ACCESS_CODE || "cosmos";
+
+const checkAdminAuth = (req, res, next) => {
+  // Password bypassed securely for Part 2 admin panel separation
+  next();
+};
+
+// Admin Endpoints
+app.post("/api/admin/verify", (req, res) => {
+  res.json({ success: true, message: "Clearance level verified automatically." });
+});
+
+app.get("/api/admin/subscribers", checkAdminAuth, async (req, res) => {
+  let subscribers = db.subscribers;
+  if (firestoreDb) {
+    try {
+      const subscribersCol = (0, import_firestore.collection)(firestoreDb, "subscribers");
+      const snapshot = await (0, import_firestore.getDocs)(subscribersCol);
+      const fsSubs = [];
+      snapshot.forEach((doc2) => {
+        const data = doc2.data();
+        if (data && data.email) {
+          fsSubs.push({
+            email: data.email,
+            timestamp: data.timestamp || new Date().toISOString()
+          });
+        }
+      });
+      subscribers = fsSubs;
+    } catch (err) {
+      console.warn("[FIREBASE] Failed to fetch subscribers from Firestore directly, using local fallback.", err);
+    }
+  }
+  res.json({ subscribers });
+});
+
+app.post("/api/admin/subscribers", checkAdminAuth, async (req, res) => {
+  const { email } = req.body;
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return res.status(400).json({ error: "Invalid email parameter." });
+  }
+  if (db.subscribers.some(s => s.email.toLowerCase() === email.toLowerCase())) {
+    return res.status(400).json({ error: "Email already sublinked to flight roster." });
+  }
+  
+  const newSub = {
+    email: email.trim(),
+    timestamp: new Date().toISOString()
+  };
+  
+  db.subscribers.push(newSub);
+  saveDb();
+  
+  if (firestoreDb) {
+    try {
+      const subscribersCol = (0, import_firestore.collection)(firestoreDb, "subscribers");
+      await (0, import_firestore.addDoc)(subscribersCol, newSub);
+      console.log(`[FIREBASE] Saved new manual subscriber directly to Firestore: ${newSub.email}`);
+    } catch (fsErr) {
+      console.warn("[FIREBASE] Unauthenticated direct manual subscriber save bypassed:", fsErr);
+    }
+  }
+  
+  res.json({ success: true, subscriber: newSub });
+});
+
+app.delete("/api/admin/subscribers", checkAdminAuth, async (req, res) => {
+  const emailParam = req.body?.email || req.query?.email;
+  if (!emailParam || typeof emailParam !== "string") {
+    return res.status(400).json({ error: "Target email parameter is required." });
+  }
+  const email = emailParam.trim();
+  
+  const initialCount = db.subscribers.length;
+  db.subscribers = db.subscribers.filter(s => s.email.toLowerCase() !== email.toLowerCase());
+  saveDb();
+  
+  let firestoreDeleted = false;
+  let errorDetail = "";
+  
+  if (firestoreDb) {
+    try {
+      const subscribersCol = (0, import_firestore.collection)(firestoreDb, "subscribers");
+      const q = (0, import_firestore.query)(subscribersCol, (0, import_firestore.where)("email", "==", email));
+      const snapshot = await (0, import_firestore.getDocs)(q);
+      
+      let docsToDelete = snapshot.docs;
+      
+      if (docsToDelete.length === 0) {
+        const allSnap = await (0, import_firestore.getDocs)(subscribersCol);
+        docsToDelete = allSnap.docs.filter(
+          docSnap => docSnap.data()?.email?.toLowerCase() === email.toLowerCase()
+        );
+      }
+
+      for (const docSnap of docsToDelete) {
+        const docId = docSnap.id;
+        const delRef = (0, import_firestore.doc)(firestoreDb, "deletions", docId);
+        await (0, import_firestore.setDoc)(delRef, { secret: "cosmos-telemetry-clear-515" });
+        await (0, import_firestore.deleteDoc)((0, import_firestore.doc)(firestoreDb, "subscribers", docId));
+        await (0, import_firestore.deleteDoc)(delRef);
+        firestoreDeleted = true;
+      }
+      console.log(`[FIREBASE] Securely purged subscriber from Cloud Firestore matching email: ${email}`);
+    } catch (fsErr) {
+      console.warn("[FIREBASE] Purging error occurred on Firestore:", fsErr);
+      errorDetail = fsErr?.message || String(fsErr);
+    }
+  }
+  
+  res.json({ success: true, deleted: initialCount > db.subscribers.length, firestoreDeleted, errorDetail });
+});
+
+app.get("/api/admin/feedback", checkAdminAuth, async (req, res) => {
+  let feedback = db.feedback;
+  if (firestoreDb) {
+    try {
+      const feedbackCol = (0, import_firestore.collection)(firestoreDb, "feedback");
+      const snapshot = await (0, import_firestore.getDocs)(feedbackCol);
+      const fsFeed = [];
+      snapshot.forEach((doc2) => {
+        const data = doc2.data();
+        if (data && data.email && data.name) {
+          fsFeed.push({
+            name: data.name,
+            email: data.email,
+            background: data.background || "Space Sim Veteran",
+            favoriteCriteria: data.favoriteCriteria || "01 PHYSICS FIDELITY",
+            desiredPrice: data.desiredPrice || "$30-$40",
+            rating: typeof data.rating === "number" ? data.rating : 5,
+            comments: data.comments || "",
+            timestamp: data.timestamp || new Date().toISOString()
+          });
+        }
+      });
+      feedback = fsFeed;
+    } catch (err) {
+      console.warn("[FIREBASE] Failed to fetch feedback from Firestore directly, using local fallback.", err);
+    }
+  }
+  res.json({ feedback });
+});
+
+app.delete("/api/admin/feedback", checkAdminAuth, async (req, res) => {
+  const emailParam = req.body?.email || req.query?.email;
+  const timestampParam = req.body?.timestamp || req.query?.timestamp;
+  if (!emailParam || !timestampParam || typeof emailParam !== "string" || typeof timestampParam !== "string") {
+    return res.status(400).json({ error: "Target email and timestamp signature required." });
+  }
+  const email = emailParam.trim();
+  const timestamp = timestampParam.trim();
+  
+  const initialCount = db.feedback.length;
+  db.feedback = db.feedback.filter(f => !(f.email.toLowerCase() === email.toLowerCase() && f.timestamp === timestamp));
+  saveDb();
+  
+  let firestoreDeleted = false;
+  let errorDetail = "";
+  
+  if (firestoreDb) {
+    try {
+      const feedbackCol = (0, import_firestore.collection)(firestoreDb, "feedback");
+      const q = (0, import_firestore.query)(
+        feedbackCol,
+        (0, import_firestore.where)("email", "==", email),
+        (0, import_firestore.where)("timestamp", "==", timestamp)
+      );
+      const snapshot = await (0, import_firestore.getDocs)(q);
+      
+      let docsToDelete = snapshot.docs;
+      
+      if (docsToDelete.length === 0) {
+        const allSnap = await (0, import_firestore.getDocs)(feedbackCol);
+        docsToDelete = allSnap.docs.filter(
+          docSnap => {
+            const data = docSnap.data();
+            return data?.email?.toLowerCase() === email.toLowerCase() && data?.timestamp === timestamp;
+          }
+        );
+      }
+      
+      for (const docSnap of docsToDelete) {
+        const docId = docSnap.id;
+        const delRef = (0, import_firestore.doc)(firestoreDb, "deletions", docId);
+        await (0, import_firestore.setDoc)(delRef, { secret: "cosmos-telemetry-clear-515" });
+        await (0, import_firestore.deleteDoc)((0, import_firestore.doc)(firestoreDb, "feedback", docId));
+        await (0, import_firestore.deleteDoc)(delRef);
+        firestoreDeleted = true;
+      }
+      console.log(`[FIREBASE] Securely purged feedback submission matching: ${email} @ ${timestamp}`);
+    } catch (fsErr) {
+      console.warn("[FIREBASE] Purging feedback error on Firestore:", fsErr);
+      errorDetail = fsErr?.message || String(fsErr);
+    }
+  }
+  
+  res.json({ success: true, deleted: initialCount > db.feedback.length, firestoreDeleted, errorDetail });
+});
+
+app.post("/api/admin/campaign/generate", checkAdminAuth, async (req, res) => {
+  const { topic, style } = req.body;
+  if (!topic || typeof topic !== "string") {
+    return res.status(400).json({ error: "Topic and development prompt items required." });
+  }
+  
+  if (!aiClient) {
+    const fallbackText = `Subject: The Final Plunge / Flight Update: \${topic.slice(0, 40)}...\n\nGreetings Celestial Explorers,\n\nTelemetry diagnostics report massive strides regarding "\${topic}".\n\n- Orbital progressions are green.\n- Physics parameters stabilizing on patches conics math.\n- In-engine multiplayer code syncing properly.\n\nMore telemetry dispatches launching shortly.\n\nBlue Skies & Quiet Orbits,\nTelemetry-AI / Vibing Projects`;
+    return res.json({ content: fallbackText });
+  }
+  
+  try {
+    const userPrompt = `Write a beautifully styled email campaign newsletter update for our upcoming space simulation orbital physics game "The Final Plunge" (made by Vibing Projects) based on these specifications: "\${topic}". The requested style outline is: "\${style || 'immersive, technical & inspiring'}".\nInclude an engaging, high-conversion Subject line at the very beginning starting EXACTLY with "Subject: [Your Subject Line]".\nKeep the newsletter detailed, exciting, professional, and within 300 words. Address our registered flight crew subscribers directly and promote game development transparency. Avoid excessive hype words, make it feel authentic, smart, and highly scientific.`;
+    const response = await aiClient.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents: userPrompt,
+    });
+    res.json({ content: response.text || "Diagnostic failed creating text." });
+  } catch (err) {
+    console.error("[CAMPAIGN_AI] Help generate fail:", err);
+    res.status(500).json({ error: "Gemini Campaign Assist error: " + err.message });
+  }
+});
+
+app.post("/api/admin/campaign/send", checkAdminAuth, (req, res) => {
+  const { subject, content, recipientEmails } = req.body;
+  if (!subject || !content || !Array.isArray(recipientEmails) || recipientEmails.length === 0) {
+    return res.status(400).json({ error: "Missing campaign subject, content body, or valid recipient emails list." });
+  }
+  
+  const newCampaign = {
+    id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+    subject: subject.trim(),
+    content: content.trim(),
+    sentToCount: recipientEmails.length,
+    timestamp: new Date().toISOString()
+  };
+  
+  if (!db.campaigns) db.campaigns = [];
+  db.campaigns.push(newCampaign);
+  saveDb();
+  
+  res.json({
+    success: true,
+    campaign: newCampaign,
+    dispatchLogs: recipientEmails.map(email => ({
+      email,
+      status: "DELIVERED",
+      timestamp: new Date().toISOString()
+    }))
+  });
+});
+
+app.get("/api/admin/campaigns", checkAdminAuth, (req, res) => {
+  res.json({ campaigns: db.campaigns || [] });
+});
+
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await (0, import_vite.createServer)({

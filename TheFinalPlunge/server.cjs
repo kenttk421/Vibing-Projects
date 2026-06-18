@@ -95,9 +95,28 @@ function handleFirestoreError(error, operationType, path2) {
 }
 var CONFIG_PATH = import_path.default.join(process.cwd(), "firebase-applet-config.json");
 var firestoreDb = null;
-if (import_fs.default.existsSync(CONFIG_PATH)) {
+let firebaseConfig = null;
+
+if (process.env.FIREBASE_CONFIG) {
   try {
-    const firebaseConfig = JSON.parse(import_fs.default.readFileSync(CONFIG_PATH, "utf-8"));
+    firebaseConfig = JSON.parse(process.env.FIREBASE_CONFIG);
+    console.log("[FIREBASE] Loaded configuration from process.env.FIREBASE_CONFIG.");
+  } catch (err) {
+    console.error("[FIREBASE] Failed parsing process.env.FIREBASE_CONFIG:", err.message);
+  }
+}
+
+if (!firebaseConfig && import_fs.default.existsSync(CONFIG_PATH)) {
+  try {
+    firebaseConfig = JSON.parse(import_fs.default.readFileSync(CONFIG_PATH, "utf-8"));
+    console.log("[FIREBASE] Loaded configuration from file path CONFIG_PATH.");
+  } catch (err) {
+    console.error("[FIREBASE] Failed parsing CONFIG_PATH file:", err.message);
+  }
+}
+
+if (firebaseConfig) {
+  try {
     const firebaseApp = (0, import_app.initializeApp)(firebaseConfig);
     (0, import_firestore.setLogLevel)("error");
     const dbId = firebaseConfig.firestoreDatabaseId;
@@ -222,13 +241,24 @@ if (API_KEY) {
   console.log("No GEMINI_API_KEY environment variable found. AI chatbot features will run in offline telemetry simulator mode.");
 }
 app.get("/api/firebase/config", (req, res) => {
-  if (import_fs.default.existsSync(CONFIG_PATH)) {
+  let config = null;
+  if (process.env.FIREBASE_CONFIG) {
     try {
-      const config = JSON.parse(import_fs.default.readFileSync(CONFIG_PATH, "utf-8"));
-      res.json(config);
+      config = JSON.parse(process.env.FIREBASE_CONFIG);
     } catch (err) {
-      res.status(500).json({ error: "Failed to load Firebase configurations." });
+      console.error("[API] Failed parsing process.env.FIREBASE_CONFIG:", err.message);
     }
+  }
+  if (!config && import_fs.default.existsSync(CONFIG_PATH)) {
+    try {
+      config = JSON.parse(import_fs.default.readFileSync(CONFIG_PATH, "utf-8"));
+    } catch (err) {
+      console.error("[API] Failed parsing CONFIG_PATH file:", err.message);
+    }
+  }
+  
+  if (config) {
+    res.json(config);
   } else {
     res.status(404).json({ error: "Firebase configuration is not present." });
   }

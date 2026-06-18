@@ -221,6 +221,19 @@ if (API_KEY) {
 } else {
   console.log("No GEMINI_API_KEY environment variable found. AI chatbot features will run in offline telemetry simulator mode.");
 }
+app.get("/api/firebase/config", (req, res) => {
+  if (import_fs.default.existsSync(CONFIG_PATH)) {
+    try {
+      const config = JSON.parse(import_fs.default.readFileSync(CONFIG_PATH, "utf-8"));
+      res.json(config);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to load Firebase configurations." });
+    }
+  } else {
+    res.status(404).json({ error: "Firebase configuration is not present." });
+  }
+});
+
 app.post("/api/subscribe", async (req, res) => {
   const { email } = req.body;
   if (!email || typeof email !== "string" || !email.includes("@")) {

@@ -1,0 +1,16 @@
+{
+  "name": "vibing-projects-root",
+  "version": "1.0.0",
+  "description": "Root deploy server",
+  "main": "TheFinalPlunge/server.cjs",
+  "scripts": {
+    "start": "node TheFinalPlunge/server.cjs"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5",
+    "@google/genai": "^0.1.1",
+    "vite": "^5.2.11",
+    "firebase": "^10.12.0"
+  }
+}

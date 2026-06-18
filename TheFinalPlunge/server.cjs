@@ -32,6 +32,15 @@ var import_app = require("firebase/app");
 var import_firestore = require("firebase/firestore");
 import_dotenv.default.config();
 var app = (0, import_express.default)();
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 var PORT = process.env.PORT || 3e3;
 app.use(import_express.default.json());
 app.use("/assets", import_express.default.static(import_path.default.join(process.cwd(), "assets")));

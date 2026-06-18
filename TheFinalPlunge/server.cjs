@@ -668,7 +668,7 @@ app.post("/api/admin/campaign/generate", checkAdminAuth, async (req, res) => {
   }
 });
 
-app.post("/api/admin/campaign/send", checkAdminAuth, (req, res) => {
+app.post("/api/admin/campaign/send", checkAdminAuth, async (req, res) => {
   const { subject, content, recipientEmails } = req.body;
   if (!subject || !content || !Array.isArray(recipientEmails) || recipientEmails.length === 0) {
     return res.status(400).json({ error: "Missing campaign subject, content body, or valid recipient emails list." });
@@ -686,6 +686,53 @@ app.post("/api/admin/campaign/send", checkAdminAuth, (req, res) => {
   db.campaigns.push(newCampaign);
   saveDb();
   
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+
+  if (apiKey) {
+    console.log(`[RESEND] Attempting email campaign broadcast to ${recipientEmails.length} recipients...`);
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: recipientEmails,
+          subject: newCampaign.subject,
+          html: newCampaign.content.replace(/\n/g, "<br>")
+        })
+      });
+
+      const resData = await response.json();
+      if (response.ok) {
+        console.log("[RESEND] Broadcast completed successfully. Response ID:", resData.id);
+        return res.json({
+          success: true,
+          campaign: newCampaign,
+          dispatchLogs: recipientEmails.map(email => ({
+            email,
+            status: "DELIVERED",
+            timestamp: new Date().toISOString()
+          }))
+        });
+      } else {
+        console.error("[RESEND] API error response:", resData);
+        return res.status(response.status).json({
+          error: resData.message || "Resend API returned error status: " + response.status
+        });
+      }
+    } catch (err) {
+      console.error("[RESEND] Connection failed:", err);
+      return res.status(500).json({
+        error: "Failed connecting to Resend server: " + err.message
+      });
+    }
+  }
+
+  console.log("[RESEND] API Key not set. Executing simulated campaign broadcast...");
   res.json({
     success: true,
     campaign: newCampaign,

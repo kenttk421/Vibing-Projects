@@ -29,7 +29,70 @@ var import_dotenv = __toESM(require("dotenv"), 1);
 var import_genai = require("@google/genai");
 var import_vite = require("vite");
 var import_app = require("firebase/app");
-var import_firestore = require("firebase/firestore");
+var import_admin = require("firebase-admin");
+const adminKeyPath = import_path.default.join(process.cwd(), "firebase-service-account.json");
+if (import_admin.apps.length === 0) {
+  if (import_fs.default.existsSync(adminKeyPath)) {
+    const serviceAccount = JSON.parse(import_fs.default.readFileSync(adminKeyPath, 'utf8'));
+    import_admin.initializeApp({
+      credential: import_admin.credential.cert(serviceAccount)
+    });
+    console.log("[FIREBASE-ADMIN] Initialized using service account key file.");
+  } else {
+    import_admin.initializeApp();
+    console.log("[FIREBASE-ADMIN] Initialized using default credentials.");
+  }
+}
+
+var import_firestore = {
+  setLogLevel: () => {},
+  initializeFirestore: (app, settings, databaseId) => {
+    if (databaseId && databaseId !== "(default)") {
+      return import_admin.firestore(databaseId);
+    }
+    return import_admin.firestore();
+  },
+  collection: (db, path) => db.collection(path),
+  getDocs: async (refOrQuery) => {
+    return await refOrQuery.get();
+  },
+  addDoc: async (colRef, data) => {
+    return await colRef.add(data);
+  },
+  doc: (db, colPath, docId) => {
+    if (docId) {
+      return db.collection(colPath).doc(docId);
+    }
+    return db.doc(colPath);
+  },
+  getDoc: async (docRef) => {
+    const snap = await docRef.get();
+    const wrapped = Object.create(snap);
+    wrapped.exists = function() {
+      return snap.exists;
+    };
+    return wrapped;
+  },
+  setDoc: async (docRef, data, options) => {
+    return await docRef.set(data, options);
+  },
+  deleteDoc: async (docRef) => {
+    return await docRef.delete();
+  },
+  query: (colRef, ...constraints) => {
+    let q = colRef;
+    for (const c of constraints) {
+      q = c(q);
+    }
+    return q;
+  },
+  where: (field, op, value) => {
+    return (q) => q.where(field, op, value);
+  },
+  increment: (n) => {
+    return import_admin.firestore.FieldValue.increment(n);
+  }
+};
 import_dotenv.default.config();
 var app = (0, import_express.default)();
 app.use((req, res, next) => {

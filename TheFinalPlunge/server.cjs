@@ -30,27 +30,31 @@ var import_genai = require("@google/genai");
 var import_vite = require("vite");
 var import_app = require("firebase/app");
 var import_admin = require("firebase-admin");
+var import_admin_firestore = require("firebase-admin/firestore");
 const adminKeyPath = import_path.default.join(process.cwd(), "firebase-service-account.json");
+let firebaseAdminApp = null;
 if (import_admin.getApps().length === 0) {
   if (import_fs.default.existsSync(adminKeyPath)) {
     const serviceAccount = JSON.parse(import_fs.default.readFileSync(adminKeyPath, 'utf8'));
-    import_admin.initializeApp({
-      credential: import_admin.credential.cert(serviceAccount)
+    firebaseAdminApp = import_admin.initializeApp({
+      credential: import_admin.cert(serviceAccount)
     });
     console.log("[FIREBASE-ADMIN] Initialized using service account key file.");
   } else {
-    import_admin.initializeApp();
+    firebaseAdminApp = import_admin.initializeApp();
     console.log("[FIREBASE-ADMIN] Initialized using default credentials.");
   }
+} else {
+  firebaseAdminApp = import_admin.getApp();
 }
 
 var import_firestore = {
   setLogLevel: () => {},
   initializeFirestore: (app, settings, databaseId) => {
     if (databaseId && databaseId !== "(default)") {
-      return import_admin.firestore(databaseId);
+      return import_admin_firestore.getFirestore(firebaseAdminApp, databaseId);
     }
-    return import_admin.firestore();
+    return import_admin_firestore.getFirestore(firebaseAdminApp);
   },
   collection: (db, path) => db.collection(path),
   getDocs: async (refOrQuery) => {
@@ -90,7 +94,7 @@ var import_firestore = {
     return (q) => q.where(field, op, value);
   },
   increment: (n) => {
-    return import_admin.firestore.FieldValue.increment(n);
+    return import_admin_firestore.FieldValue.increment(n);
   }
 };
 import_dotenv.default.config();

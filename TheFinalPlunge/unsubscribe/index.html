@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminate Orbit Link // The Final Plunge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #050505;
+      --card-bg: rgba(10, 10, 10, 0.75);
+      --primary-color: #FF4400;
+      --primary-hover: #E63D00;
+      --text-main: #FFFFFF;
+      --text-muted: #8E8E93;
+      --border-color: rgba(255, 68, 0, 0.15);
+      --border-focus: rgba(255, 68, 0, 0.4);
+      --font-display: 'Outfit', sans-serif;
+      --font-sans: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 50% 25%, rgba(255, 68, 0, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 10% 80%, rgba(255, 68, 0, 0.03) 0%, transparent 40%),
+        linear-gradient(rgba(255, 255, 255, 0.003) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.003) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background grid light animation */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 30%), rgba(255, 68, 0, 0.04) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Glassmorphic card container */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.5), 
+        0 0 30px rgba(255, 68, 0, 0.03),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -50%;
+      width: 200%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 68, 0, 0.4), transparent);
+      animation: scan 4s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(50%); }
+    }
+
+    /* Header Icon */
+    .brand-icon {
+      font-size: 32px;
+      color: var(--primary-color);
+      margin-bottom: 24px;
+      display: inline-block;
+      filter: drop-shadow(0 0 8px rgba(255, 68, 0, 0.4));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #FFFFFF 0%, #E6E6E6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    /* Forms and inputs */
+    .form-group {
+      margin-bottom: 24px;
+      text-align: left;
+      position: relative;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    input[type="email"] {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 16px 16px 46px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    input[type="email"]:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 15px rgba(255, 68, 0, 0.15);
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    input[type="email"]:focus + .input-icon {
+      color: var(--primary-color);
+    }
+
+    /* Telemetry Info Panel */
+    .telemetry-panel {
+      background: rgba(255, 68, 0, 0.04);
+      border: 1px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      text-align: left;
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .telemetry-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .telemetry-label {
+      color: var(--text-muted);
+    }
+
+    .telemetry-value {
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    /* Premium Button styling */
+    .btn {
+      width: 100%;
+      background: var(--primary-color);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(255, 68, 0, 0.25);
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 6px 20px rgba(255, 68, 0, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(255, 68, 0, 0.2);
+    }
+
+    .btn:disabled {
+      background: rgba(255, 68, 0, 0.2);
+      color: rgba(255, 255, 255, 0.4);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Interactive States (Success, Error, Loading) */
+    .state-view {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    .state-active {
+      display: block;
+    }
+
+    .status-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .success-icon {
+      color: #22c55e;
+      filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.4));
+    }
+
+    .error-icon {
+      color: #ef4444;
+      filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4));
+    }
+
+    .status-desc {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    /* Back Home links */
+    .link-back {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 15px;
+    }
+
+    .link-back:hover {
+      color: var(--text-main);
+    }
+
+    /* Spinners & Micro animations */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #FFFFFF;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer branding */
+    .footer-brand {
+      margin-top: 30px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.25);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="main-card">
+      
+      <!-- VIEW 1: CONFIRM UNSUBSCRIBE -->
+      <div class="state-view state-active" id="view-confirm">
+        <div class="brand-icon">
+          <i class="fa-solid fa-satellite-dish"></i>
+        </div>
+        <h1>Terminate Orbit Link</h1>
+        <p class="subtitle" id="subtitle-text">Confirm your telemetry disconnection from The Final Plunge campaign roster.</p>
+        
+        <form id="unsubscribe-form">
+          <div class="form-group" id="input-group">
+            <div class="input-wrapper">
+              <input type="email" id="email-input" placeholder="Enter your email address" required autocomplete="email">
+              <i class="fa-solid fa-envelope input-icon"></i>
+            </div>
+          </div>
+
+          <div class="telemetry-panel" id="telemetry-info" style="display: none;">
+            <div class="telemetry-row">
+              <span class="telemetry-label">SIGNAL:</span>
+              <span class="telemetry-value">DE-ORBIT PENDING</span>
+            </div>
+            <div class="telemetry-row">
+              <span class="telemetry-label">COORDINATES:</span>
+              <span class="telemetry-value" id="telemetry-email">-</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn" id="submit-btn">
+            <span>Confirm De-orbit</span>
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- VIEW 2: LOADING STATE -->
+      <div class="state-view" id="view-loading">
+        <div class="brand-icon">
+          <i class="fa-solid fa-compass-drafting animate-pulse"></i>
+        </div>
+        <h1>Terminating Link</h1>
+        <p class="subtitle">Broadcasting coordinates and executing de-orbit commands on Cloud Run telemetry service...</p>
+        <div style="display: flex; justify-content: center; margin: 40px 0;">
+          <div class="spinner" style="width: 36px; height: 36px; border-width: 3px; border-top-color: var(--primary-color);"></div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: SUCCESS STATE -->
+      <div class="state-view" id="view-success">
+        <div class="status-icon success-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h1>Link Terminated</h1>
+        <p class="status-desc" id="success-message">Telemetry link severed. Your coordinates have been purged from The Final Plunge flight roster.</p>
+        <a href="https://vibingprojects.xyz/TheFinalPlunge" class="link-back">
+          <i class="fa-solid fa-arrow-left"></i> Return to Main Deck
+        </a>
+      </div>
+
+      <!-- VIEW 4: ERROR STATE -->
+      <div class="state-view" id="view-error">
+        <div class="status-icon error-icon">
+          <i class="fa-solid fa-circle-exclamation"></i>
+        </div>
+        <h1>Signal Timeout</h1>
+        <p class="status-desc" id="error-message">Unable to broadcast unsubscribe parameters to telemetry node. Please check your network linkage or try again.</p>
+        <button class="btn" id="retry-btn">
+          <i class="fa-solid fa-rotate-right"></i> Retry Broadcast
+        </button>
+        <br>
+        <a href="#" class="link-back" id="back-to-input">
+          Edit Email Coordinates
+        </a>
+      </div>
+
+      <div class="footer-brand">
+        System: Vibing-Projects // TheFinalPlunge
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Live Cloud Run Backend Endpoint
+    const API_ENDPOINT = 'https://the-final-plunge-backend-ltdlfvg5sa-uc.a.run.app/api/unsubscribe';
+
+    // Interactive mouse glow positioning
+    document.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      document.body.style.setProperty('--mouse-x', `${x}%`);
+      document.body.style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    // Elements
+    const views = {
+      confirm: document.getElementById('view-confirm'),
+      loading: document.getElementById('view-loading'),
+      success: document.getElementById('view-success'),
+      error: document.getElementById('view-error')
+    };
+
+    const emailInput = document.getElementById('email-input');
+    const subtitleText = document.getElementById('subtitle-text');
+    const inputGroup = document.getElementById('input-group');
+    const telemetryInfo = document.getElementById('telemetry-info');
+    const telemetryEmail = document.getElementById('telemetry-email');
+    const form = document.getElementById('unsubscribe-form');
+    const retryBtn = document.getElementById('retry-btn');
+    const backToInput = document.getElementById('back-to-input');
+
+    // Extract email from query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailParam = urlParams.get('email');
+
+    if (emailParam && emailParam.includes('@')) {
+      emailInput.value = emailParam;
+      // Pre-fill mode: emphasize clean UI
+      inputGroup.style.display = 'none';
+      telemetryInfo.style.display = 'block';
+      telemetryEmail.textContent = emailParam.toUpperCase();
+      subtitleText.textContent = 'Confirm the purge of this email coordinates from our dispatch databases:';
+    }
+
+    function switchView(targetKey) {
+      Object.keys(views).forEach(key => {
+        if (key === targetKey) {
+          views[key].classList.add('state-active');
+        } else {
+          views[key].classList.remove('state-active');
+        }
+      });
+    }
+
+    async function handleUnsubscribe(emailVal) {
+      switchView('loading');
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: emailVal })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          if (data.message) {
+            document.getElementById('success-message').textContent = data.message;
+          }
+          switchView('success');
+        } else {
+          throw new Error(data.error || 'Server rejected broadcast command');
+        }
+      } catch (err) {
+        console.error('Opt-out telemetry broadcast error:', err);
+        document.getElementById('error-message').textContent = err.message || 'Unable to establish secure telemetry bridge to unsubscribe.';
+        switchView('error');
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailVal = emailInput.value.trim();
+      if (emailVal) {
+        await handleUnsubscribe(emailVal);
+      }
+    });
+
+    retryBtn.addEventListener('click', async () => {
+      const emailVal = emailInput.value.trim();
+      if (emailVal) {
+        await handleUnsubscribe(emailVal);
+      }
+    });
+
+    backToInput.addEventListener('click', (e) => {
+      e.preventDefault();
+      inputGroup.style.display = 'block';
+      telemetryInfo.style.display = 'none';
+      subtitleText.textContent = 'Confirm your telemetry disconnection from The Final Plunge campaign roster.';
+      switchView('confirm');
+    });
+  </script>
+</body>
+</html>

@@ -298,6 +298,54 @@ app.post("/api/subscribe", async (req, res) => {
   }
   res.json({ message: "Telemetry link locked. Welcome to the flight roster!", subscription: newSub });
 });
+app.post("/api/unsubscribe", async (req, res) => {
+  const { email } = req.body;
+  if (!email || typeof email !== "string" || !email.includes("@")) {
+    return res.status(400).json({ error: "Invalid email address." });
+  }
+  let removed = false;
+  const localIndex = db.subscribers.findIndex((s) => s.email.toLowerCase() === email.toLowerCase());
+  if (localIndex !== -1) {
+    db.subscribers.splice(localIndex, 1);
+    saveDb();
+    removed = true;
+  }
+  if (firestoreDb) {
+    try {
+      const subscribersCol = (0, import_firestore.collection)(firestoreDb, "subscribers");
+      const q = (0, import_firestore.query)(subscribersCol, (0, import_firestore.where)("email", "==", email));
+      let querySnapshot = await (0, import_firestore.getDocs)(q);
+      let docsToDelete = [];
+      querySnapshot.forEach((doc) => docsToDelete.push(doc));
+      if (docsToDelete.length === 0) {
+        const allSnapshot = await (0, import_firestore.getDocs)(subscribersCol);
+        allSnapshot.forEach((doc) => {
+          if (doc.data()?.email?.toLowerCase() === email.toLowerCase()) {
+            docsToDelete.push(doc);
+          }
+        });
+      }
+      if (docsToDelete.length > 0) {
+        for (const docRef of docsToDelete) {
+          await (0, import_firestore.deleteDoc)(docRef.ref);
+        }
+        removed = true;
+      }
+      if (removed) {
+        try {
+          const statsRef = (0, import_firestore.doc)(firestoreDb, "public_stats", "counts");
+          await (0, import_firestore.setDoc)(statsRef, { totalSubscribers: (0, import_firestore.increment)(-1) }, { merge: true });
+        } catch (statsErr) {
+          console.warn("[FIREBASE] Failed to decrement subscriber stats:", statsErr?.message || statsErr);
+        }
+      }
+      console.log(`[FIREBASE] Unsubscribe processed for: ${email}. Removed: ${removed}`);
+    } catch (fsErr) {
+      console.warn("[FIREBASE] Firestore unsubscribe transaction bypassed:", fsErr?.message || fsErr);
+    }
+  }
+  res.json({ message: "Orbit link terminated. You have been removed from the flight roster." });
+});
 app.post("/api/feedback", async (req, res) => {
   const { name, email, background, favoriteCriteria, desiredPrice, rating, comments } = req.body;
   if (!email || !name || !background || !favoriteCriteria || !desiredPrice || typeof rating !== "number") {

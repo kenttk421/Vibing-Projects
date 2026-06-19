@@ -31,7 +31,7 @@ var import_vite = require("vite");
 var import_app = require("firebase/app");
 var import_admin = require("firebase-admin");
 const adminKeyPath = import_path.default.join(process.cwd(), "firebase-service-account.json");
-if (import_admin.apps.length === 0) {
+if (import_admin.getApps().length === 0) {
   if (import_fs.default.existsSync(adminKeyPath)) {
     const serviceAccount = JSON.parse(import_fs.default.readFileSync(adminKeyPath, 'utf8'));
     import_admin.initializeApp({

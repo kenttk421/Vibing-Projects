@@ -773,6 +773,9 @@ a {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
   transition: transform var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
 }
 
@@ -781,6 +784,11 @@ a {
   background: var(--bg-card-hover);
   border-color: var(--border-medium);
   box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+}
+
+.project-card:hover .card-link {
+  color: #fef08a;
+  transform: translateX(4px);
 }
 
 /* Specialized Card Theme Borders on Hover */

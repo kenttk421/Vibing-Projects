@@ -861,7 +861,7 @@ function renderApp() {
               const targetAttr = isExternal ? `target="_blank" rel="noopener noreferrer"` : ``;
 
               return `
-                <article class="project-card ${p.theme || ''}">
+                <a href="${p.url || p.primaryUrl}" class="project-card ${p.theme || ''}" ${targetAttr}>
                   <div class="card-media">
                     <img src="${p.imageSrc}" alt="${p.imageAlt}" loading="lazy" />
                     <span class="card-badge">${p.badge || p.category}</span>
@@ -876,14 +876,14 @@ function renderApp() {
                     </div>
 
                     <div class="card-footer">
-                      <a href="${p.url || p.primaryUrl}" class="card-link" ${targetAttr}>
+                      <div class="card-link">
                         <span>Play & Explore</span>
                         <span>➔</span>
-                      </a>
+                      </div>
                       <div class="card-type-icon">${p.icon || '🚀'}</div>
                     </div>
                   </div>
-                </article>
+                </a>
               `;
             }).join('')}
           </div>

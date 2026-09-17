@@ -126,6 +126,7 @@ function initConstellationCanvas(canvas) {
   let animationFrameId;
   let resizeObserver;
   const vpStars = [];
+  const vpEdges = [];
   const ambientStars = [];
   const ambientCount = 45; // Ambient celestial starfield spanning down through The Final Plunge
   const mouse = { x: -1000, y: -1000, vx: 0, vy: 0, radius: 130 };
@@ -139,6 +140,7 @@ function initConstellationCanvas(canvas) {
 
   function setupConstellation() {
     vpStars.length = 0;
+    vpEdges.length = 0;
     ambientStars.length = 0;
 
     // Center the loose dynamic VP constellation in the upper Hero region
@@ -146,6 +148,7 @@ function initConstellationCanvas(canvas) {
     vpHeight = vpWidth * (444 / 745);
     const vpLeft = (width - vpWidth) * 0.5;
     const vpTop = Math.max(25, Math.min(height * 0.08, 80));
+    const scale = vpWidth / 745;
 
     // 1. Build VP constellation nodes with organic harmonic floating parameters
     VP_COORDS.forEach((pt, idx) => {
@@ -174,7 +177,29 @@ function initConstellationCanvas(canvas) {
       });
     });
 
-    // 2. Build ambient stars across full canvas height (from top through The Final Plunge)
+    // 2. Precompute balanced k-NN constellation strings (k=3 nearest neighbors within 65 * scale)
+    // Modeled after BayaardsBattleBeats to provide clean, elegant letterforms with zero clutter
+    const edgeSet = new Set();
+    const maxLinkDist = 65 * scale;
+    for (let i = 0; i < vpStars.length; i++) {
+      const dists = vpStars.map((p, j) => ({
+        j,
+        d: Math.hypot(p.anchorX - vpStars[i].anchorX, p.anchorY - vpStars[i].anchorY)
+      })).filter(x => x.j !== i);
+      dists.sort((a, b) => a.d - b.d);
+      for (let n = 0; n < Math.min(3, dists.length); n++) {
+        if (dists[n].d < maxLinkDist) {
+          const j = dists[n].j;
+          const key = i < j ? `${i}_${j}` : `${j}_${i}`;
+          if (!edgeSet.has(key)) {
+            edgeSet.add(key);
+            vpEdges.push([i, j]);
+          }
+        }
+      }
+    }
+
+    // 3. Build ambient stars across full canvas height (from top through The Final Plunge)
     for (let i = 0; i < ambientCount; i++) {
       ambientStars.push({
         isVP: false,
@@ -244,10 +269,6 @@ function initConstellationCanvas(canvas) {
     mouse.vy *= 0.92;
     const mouseSpeed = Math.hypot(mouse.vx, mouse.vy);
 
-    // Dynamic connection threshold based on current VP bounding scale
-    const scale = vpWidth / 745;
-    const connectThreshold = 96 * scale; // Balanced density for crisp, flowing VP letterforms
-
     // 1. Update and draw VP Constellation Stars (Loose Dynamic Shape in the Background)
     for (let i = 0; i < vpStars.length; i++) {
       const star = vpStars[i];
@@ -286,22 +307,14 @@ function initConstellationCanvas(canvas) {
       ctx.fill();
     }
 
-    // 2. Draw VP Constellation Strings: Crisp, solid lines (non-translucent at rest)
-    ctx.strokeStyle = "rgba(203, 213, 225, 0.85)";
+    // 2. Draw VP Constellation Strings: Crisp, clean lines (non-translucent at rest, balanced like BayaardsBattleBeats)
+    ctx.strokeStyle = "rgba(203, 213, 225, 0.82)";
     ctx.lineWidth = 1;
     ctx.beginPath();
-    const connectThresholdSq = connectThreshold * connectThreshold;
-    for (let i = 0; i < vpStars.length; i++) {
-      for (let j = i + 1; j < vpStars.length; j++) {
-        const a = vpStars[i];
-        const b = vpStars[j];
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        if (dx * dx + dy * dy < connectThresholdSq) {
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-        }
-      }
+    for (let i = 0; i < vpEdges.length; i++) {
+      const [aIdx, bIdx] = vpEdges[i];
+      ctx.moveTo(vpStars[aIdx].x, vpStars[aIdx].y);
+      ctx.lineTo(vpStars[bIdx].x, vpStars[bIdx].y);
     }
     ctx.stroke();
 

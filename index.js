@@ -828,7 +828,7 @@ function renderApp() {
                   <span>${flagship.primaryLabel}</span>
                   <span>➔</span>
                 </a>
-                <a href="${flagship.secondaryUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+                <a href="${flagship.secondaryUrl}" class="btn-secondary">
                   <span>${flagship.secondaryLabel}</span>
                 </a>
               </div>
@@ -852,11 +852,8 @@ function renderApp() {
           <!-- Project Cards Grid (2x2) -->
           <div class="projects-grid" id="projectsGrid">
             ${gridProjects.map(p => {
-              const isExternal = p.url?.startsWith('http');
-              const targetAttr = isExternal ? `target="_blank" rel="noopener noreferrer"` : ``;
-
               return `
-                <a href="${p.url || p.primaryUrl}" class="project-card ${p.theme || ''}" ${targetAttr}>
+                <a href="${p.url || p.primaryUrl}" class="project-card ${p.theme || ''}">
                   <div class="card-media">
                     <img src="${p.imageSrc}" alt="${p.imageAlt}" loading="lazy" />
                     <span class="card-badge">${p.badge || p.category}</span>
@@ -915,7 +912,7 @@ function renderApp() {
               </div>
 
               <div class="scope-actions">
-                <a href="/sitescale/" target="_blank" rel="noopener noreferrer" class="btn-primary cyan-theme">
+                <a href="/sitescale/" class="btn-primary cyan-theme">
                   <span>Try The Project Scope Calculator</span>
                   <span>➔</span>
                 </a>
@@ -1013,7 +1010,7 @@ function renderApp() {
           </div>
 
           <ul class="footer-links">
-            <li><a href="https://github.com/kenttk421" target="_blank" rel="noopener noreferrer">GitHub Profile</a></li>
+            <li><a href="https://github.com/kenttk421">GitHub Profile</a></li>
             <li><a href="#flagship">The Final Plunge</a></li>
             <li><a href="#projects">Projects Catalog</a></li>
             <li><a href="#scope-calculator">Software Scope Calculator</a></li>

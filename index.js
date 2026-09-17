@@ -286,27 +286,24 @@ function initConstellationCanvas(canvas) {
       ctx.fill();
     }
 
-    // 2. Draw VP Constellation Strings: Subtle, Calm Background Lines
+    // 2. Draw VP Constellation Strings: Crisp, solid lines (non-translucent at rest)
+    ctx.strokeStyle = "rgba(203, 213, 225, 0.85)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const connectThresholdSq = connectThreshold * connectThreshold;
     for (let i = 0; i < vpStars.length; i++) {
       for (let j = i + 1; j < vpStars.length; j++) {
         const a = vpStars[i];
         const b = vpStars[j];
         const dx = b.x - a.x;
         const dy = b.y - a.y;
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < connectThreshold) {
-          const relDist = 1 - dist / connectThreshold;
-          const alpha = relDist * 0.16; // Subtle, elegant background line opacity
-          ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
-          ctx.lineWidth = 0.75;
-          ctx.beginPath();
+        if (dx * dx + dy * dy < connectThresholdSq) {
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.stroke();
         }
       }
     }
+    ctx.stroke();
 
     // 4. Update and Draw Ambient Stars Across Full Canvas Height
     for (let i = 0; i < ambientStars.length; i++) {

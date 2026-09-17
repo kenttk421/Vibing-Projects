@@ -749,11 +749,6 @@ function renderApp() {
               <li><a href="#about" class="nav-link">The Maker</a></li>
             </ul>
           </nav>
-
-          <div class="status-indicator">
-            <span class="status-dot"></span>
-            <span>Workshop Online</span>
-          </div>
         </div>
       </header>
 

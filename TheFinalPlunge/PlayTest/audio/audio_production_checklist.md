@@ -81,9 +81,9 @@ A master audio production document and AI prompt guide for **The Final Plunge**.
 
 - [ ] **6. Wind & Dynamic Pressure (Loopable)**
   - **AI Prompt**: `High altitude atmospheric wind rush, deep aerodynamic air turbulence, supersonic wind noise loop, smooth seamless loop`
-- [ ] **7. Plasma Re-entry Roar (Loopable)**
+- [x] **7. Plasma Re-entry Roar (Loopable)** Done (`plasma.mp3`)
   - **AI Prompt**: `Intense re-entry plasma fire roar, deep muffled thermal shockwave rumble, crackling heat shield atmosphere entry, loopable`
-- [ ] **8. Aerodynamic Buffeting (Loopable)**
+- [x] **8. Aerodynamic Buffeting (Loopable)** Done (`shaking_hull.mp3`)
   - **AI Prompt**: `Heavy airframe vibration, aerodynamic hull shuddering, low frequency metal stress rumble, cockpit rattling`
 - [ ] **9. Sonic Boom (One-Shot)**
   - **AI Prompt**: `Supersonic sonic boom, sharp double thunder clap explosion, distant echoing shockwave, heavy sub-bass blast`

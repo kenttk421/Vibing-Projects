@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="brand">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renacer Painting | South Bay Interior, Exterior & Finishing Stains Specialist</title>
+  <meta name="description" content="Renacer Painting delivers premier interior & exterior painting, fine wood stains & lacquers, and general construction throughout the South Bay area. Call (310) 418-9598 for a free estimate.">
+
+  <!-- Google Fonts: Inter, Outfit, Poppins, Playfair Display, Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for Interactive Google Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       STYLE / THEME SELECTOR NOTIFICATION BANNER
+       ========================================================================== -->
+  <div class="style-banner" id="styleBanner">
+    <div class="container style-banner-inner">
+      <div class="style-banner-text">
+        <span class="style-banner-badge" id="bannerActiveStyle">Style 2: Renacer Brand Craft</span>
+        <span>Previewing Client Presentation Version. Switch styles anytime:</span>
+      </div>
+      <div class="style-pills">
+        <button class="style-pill-btn" data-theme-choice="modern" title="Switch to Modern Minimalist">
+          <span>✦</span> Modern Minimalist
+        </button>
+        <button class="style-pill-btn active" data-theme-choice="brand" title="Switch to Brand Logo Craft">
+          <span>🎨</span> Logo Brand Match
+        </button>
+        <button class="style-pill-btn" data-theme-choice="coastal" title="Switch to South Bay Coastal Estate">
+          <span>🌊</span> South Bay Coastal Estate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== -->
+  <header class="site-header">
+    <!-- Top Contact Bar -->
+    <div class="header-top-bar">
+      <div class="container header-top-bar-inner">
+        <div class="service-area-tag">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          <span>Serving the South Bay: Manhattan Beach • Torrance • Redondo • Hermosa • Palos Verdes</span>
+        </div>
+        <div class="contact-quick-links">
+          <a href="tel:3104189598" class="quick-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+            <strong>(310) 418-9598</strong>
+          </a>
+          <a href="mailto:renacerpaint@gmail.com" class="quick-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+            <span>renacerpaint@gmail.com</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <div class="container header-nav-row">
+      <a href="#home" class="brand-logo-wrap">
+        <div class="brand-logo-circle">
+          <img src="assets/images/logo.png" alt="Renacer Painting Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-text-block">
+          <span class="brand-name">Renacer Painting</span>
+          <span class="brand-subline">Finishing & Construction</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#services" class="nav-link">Services</a></li>
+          <li><a href="#gallery" class="nav-link">Instagram Gallery</a></li>
+          <li><a href="#before-after" class="nav-link">Transformations</a></li>
+          <li><a href="#service-area" class="nav-link">Service Map</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Action Buttons & Top Right Style Switcher -->
+      <div class="nav-cta-group">
+        <!-- Prominent Style Switcher in Top Right -->
+        <div class="header-style-switcher">
+          <button class="style-switch-btn" id="styleSwitchBtn" title="Change Website Design Style">
+            <div class="style-palette-preview">
+              <span class="color-dot" style="background: #1e88e5;"></span>
+              <span class="color-dot" style="background: #f59e0b;"></span>
+              <span class="color-dot" style="background: #dc2626;"></span>
+            </div>
+            <span id="currentStyleName">Style: Logo Brand</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div class="style-dropdown" id="styleDropdown">
+            <div class="style-dropdown-title">Choose Design Version</div>
+            
+            <button class="style-option-btn" data-theme-choice="modern">
+              <div class="style-option-icon" style="background: #1e293b; color: #38bdf8;">✦</div>
+              <div class="style-option-details">
+                <span class="style-option-name">1. Modern Minimalist</span>
+                <span class="style-option-desc">Sleek dark architectural luxury, crisp lines, contemporary feel</span>
+              </div>
+            </button>
+
+            <button class="style-option-btn active" data-theme-choice="brand">
+              <div class="style-option-icon" style="background: #e0f2fe; color: #1e88e5;">🎨</div>
+              <div class="style-option-details">
+                <span class="style-option-name">2. Renacer Brand Craft</span>
+                <span class="style-option-desc">Direct match to the logo's vibrant blue, gold, ochre & crimson paint drips</span>
+              </div>
+            </button>
+
+            <button class="style-option-btn" data-theme-choice="coastal">
+              <div class="style-option-icon" style="background: #0a192f; color: #c29b38;">🌊</div>
+              <div class="style-option-details">
+                <span class="style-option-name">3. South Bay Coastal Estate</span>
+                <span class="style-option-desc">Pacific navy, warm linen & champagne gold for high-end coastal estates</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <a href="tel:3104189598" class="btn-call">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+          <span>Call 310-418-9598</span>
+        </a>
+
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Navigation">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       HERO SECTION
+       ========================================================================== */ -->
+  <section class="hero-section" id="home">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge-wrap">
+          <span class="hero-badge" id="heroBadgeText">Artisan Passion • 100% Brand Match</span>
+        </div>
+        <h1 class="hero-title">
+          Master Painting, <span class="highlight">Fine Stains & Lacquers</span> Across the South Bay
+        </h1>
+        <p class="hero-desc">
+          From luxury Manhattan Beach beachfront homes to Palos Verdes estates and Torrance residences. We specialize in precision interior and exterior painting, mirror-finish stains & lacquers, and turnkey general construction.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">
+            <span>Request Free Estimate</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="#gallery" class="btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            <span>View Instagram Gallery</span>
+          </a>
+        </div>
+
+        <div class="hero-trust-bar">
+          <div class="trust-item">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            <span>Licensed & Insured</span>
+          </div>
+          <div class="trust-item">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <span>Top-Rated South Bay Craft</span>
+          </div>
+          <div class="trust-item">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2zm0-10h2v8h-2z"/></svg>
+            <span>Satisfaction Guaranteed</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual Column -->
+      <div class="hero-visual-col">
+        <div class="hero-image-card">
+          <div class="hero-top-badge">
+            <svg width="14" height="14" fill="#38bdf8" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+            <span>Manhattan Beach Coastal Project</span>
+          </div>
+          <img src="assets/images/hero-exterior.jpg" alt="South Bay Coastal Craftsman Home Exterior" class="hero-main-img">
+        </div>
+
+        <div class="hero-floating-card">
+          <div class="floating-icon">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18 4V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V6h1v4H9v11c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-9h8c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1h-3z"/>
+            </svg>
+          </div>
+          <div class="floating-text">
+            <strong>Flawless Lacquers & Paints</strong>
+            <span>Direct from South Bay craftsman workshop</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       CORE SERVICES SECTION
+       ========================================================================== -->
+  <section class="section section-alt" id="services">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Precision Services</span>
+        <h2 class="section-title">Specialized Finishes For Discerning Homeowners</h2>
+        <p class="section-desc">
+          Every project executed with meticulous surface preparation, dust containment, premium materials, and perfectionist attention to detail.
+        </p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Service 1: Interior Painting -->
+        <div class="service-card">
+          <div class="service-img-wrap">
+            <img src="assets/images/hero-interior.jpg" alt="Interior Painting" class="service-img">
+            <span class="service-badge">Interior Specialist</span>
+          </div>
+          <div class="service-body">
+            <div class="service-icon-row">
+              <div class="service-icon-box">🎨</div>
+              <h3 class="service-card-title">Interior Painting</h3>
+            </div>
+            <p class="service-card-desc">
+              Transform your living spaces with smooth, streak-free walls, vaulted ceilings, and architectural trim with dustless prep and clean edges.
+            </p>
+            <ul class="service-features-list">
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Level 5 wall drywall prep & skim coating</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Fine trim, baseboard, door & ceiling coatings</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Zero/Low-VOC eco paints (Benjamin Moore & SW)</span>
+              </li>
+            </ul>
+            <a href="#contact" class="service-card-btn">
+              <span>Book Interior Consult</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Service 2: Exterior Painting -->
+        <div class="service-card">
+          <div class="service-img-wrap">
+            <img src="assets/images/spanish-exterior.jpg" alt="Exterior Painting" class="service-img">
+            <span class="service-badge">Weatherproof</span>
+          </div>
+          <div class="service-body">
+            <div class="service-icon-row">
+              <div class="service-icon-box">🏡</div>
+              <h3 class="service-card-title">Exterior Painting</h3>
+            </div>
+            <p class="service-card-desc">
+              South Bay coastal climates demand extreme weatherproofing against marine moisture, UV radiation, and ocean salt-air erosion.
+            </p>
+            <ul class="service-features-list">
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Stucco patching & elastomeric waterproof paint</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Wood siding, fascia boards & eaves protection</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Full pressure washing, scraping & primer sealing</span>
+              </li>
+            </ul>
+            <a href="#contact" class="service-card-btn">
+              <span>Book Exterior Consult</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Service 3: Finishing Stains & Lacquers -->
+        <div class="service-card">
+          <div class="service-img-wrap">
+            <img src="assets/images/stain-lacquer.jpg" alt="Finishing Stains and Lacquers" class="service-img">
+            <span class="service-badge">Artisan Finish</span>
+          </div>
+          <div class="service-body">
+            <div class="service-icon-row">
+              <div class="service-icon-box">🪵</div>
+              <h3 class="service-card-title">Stains & Lacquers</h3>
+            </div>
+            <p class="service-card-desc">
+              Our crown specialty: Hand-rubbed stains and spray-applied lacquer finishes for kitchen cabinets, vanities, banisters, and fine millwork.
+            </p>
+            <ul class="service-features-list">
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Factory-grade cabinet lacquer refinishing</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Custom stain color matching & wood toning</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>High-gloss, satin & matte protective clear coats</span>
+              </li>
+            </ul>
+            <a href="#contact" class="service-card-btn">
+              <span>Book Lacquer Consult</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Service 4: General Construction -->
+        <div class="service-card">
+          <div class="service-img-wrap">
+            <img src="assets/images/construction.jpg" alt="General Construction" class="service-img">
+            <span class="service-badge">Full Remodel</span>
+          </div>
+          <div class="service-body">
+            <div class="service-icon-row">
+              <div class="service-icon-box">🔨</div>
+              <h3 class="service-card-title">General Construction</h3>
+            </div>
+            <p class="service-card-desc">
+              Beyond painting: Carpentry, framing, drywall repairs, wainscoting installation, beam ceilings, and light structural residential remodeling.
+            </p>
+            <ul class="service-features-list">
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Drywall replacement, repair & texture matching</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Crown molding, wainscoting & architectural trim</span>
+              </li>
+              <li class="service-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <span>Residential carpentry, framing & renovation prep</span>
+              </li>
+            </ul>
+            <a href="#contact" class="service-card-btn">
+              <span>Book Construction Consult</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       INSTAGRAM CONNECTED GALLERY SECTION
+       ========================================================================== -->
+  <section class="section" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Connected Feed</span>
+        <h2 class="section-title">Instagram Project Gallery</h2>
+        <p class="section-desc">
+          Live feed from our official Instagram account. Follow our daily transformations across Manhattan Beach, Torrance, Redondo Beach, and Palos Verdes.
+        </p>
+      </div>
+
+      <!-- Instagram Account Header Card -->
+      <div class="instagram-header-card">
+        <div class="ig-profile-info">
+          <div class="ig-avatar-wrap">
+            <div class="ig-avatar-ring">
+              <img src="assets/images/logo.png" alt="@renacerpaint on Instagram" class="ig-avatar-img">
+            </div>
+          </div>
+          <div class="ig-meta">
+            <div class="ig-handle-row">
+              <span class="ig-handle">@renacerpaint</span>
+              <span class="ig-badge-verified" title="Verified South Bay Craftsman">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              </span>
+              <span class="ig-live-badge">
+                <span class="live-dot"></span>
+                <span>Live Feed Sync</span>
+              </span>
+            </div>
+            <div class="ig-stats-row">
+              <span><span class="ig-stat-bold">428</span> posts</span>
+              <span><span class="ig-stat-bold">4.8k</span> followers</span>
+              <span>South Bay, CA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ig-actions">
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="btn-ig-follow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            <span>Follow @renacerpaint</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="gallery-filter-bar">
+        <button class="filter-btn active" data-filter="all">All Projects</button>
+        <button class="filter-btn" data-filter="interior">Interior Painting</button>
+        <button class="filter-btn" data-filter="exterior">Exterior Homes</button>
+        <button class="filter-btn" data-filter="stain">Stains & Lacquer</button>
+        <button class="filter-btn" data-filter="construction">General Construction</button>
+      </div>
+
+      <!-- Interactive Instagram Grid -->
+      <div class="instagram-grid" id="instagramGrid">
+        <!-- Rendered dynamically by main.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       BEFORE & AFTER INTERACTIVE TRANSFORMATION SLIDER
+       ========================================================================== -->
+  <section class="section section-alt" id="before-after">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interactive Preview</span>
+        <h2 class="section-title">See The Transformation</h2>
+        <p class="section-desc">
+          Drag the slider to compare original surfaces with our precision multi-coat lacquer & painting finish.
+        </p>
+      </div>
+
+      <div class="ba-container" id="beforeAfterBox">
+        <div class="ba-image-after">
+          <img src="assets/images/kitchen-cabinets.jpg" alt="After: Refinished Deep Navy Lacquer Cabinets">
+          <span class="ba-tag-right">After: Renacer Satin Lacquer</span>
+        </div>
+        <div class="ba-image-before" id="baBeforeImgWrap">
+          <img src="assets/images/stain-lacquer.jpg" alt="Before: Natural Grain Hardwood">
+          <span class="ba-tag-left">Detailed Walnut Craft</span>
+        </div>
+        <div class="ba-handle" id="baHandle">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14 7l-5 5 5 5V7zM10 7l5 5-5 5V7z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       HIGHLIGHTED SERVICE AREA MAP: LA CITY TO IRVINE
+       ========================================================================== -->
+  <section class="section section-alt" id="service-area">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Service Area</span>
+        <h2 class="section-title">Highlighted Service Area</h2>
+        <p class="section-desc">
+          Our service area spans from Los Angeles down to Irvine, bounded between the Pacific beaches and the mountain foothills. Drag and zoom the Google Map to explore coverage.
+        </p>
+      </div>
+
+      <div class="map-showcase-grid">
+        <!-- Google Maps with Highlight Polygon -->
+        <div class="gmap-card-wrapper">
+          <div class="gmap-top-bar">
+            <div class="gmap-badge">
+              <span class="map-status-dot"></span>
+              <span>Google Maps</span>
+            </div>
+            <div class="gmap-controls">
+              <button type="button" id="toggleMapTypeBtn" class="gmap-btn-pill" title="Switch between Google Roadmap and Hybrid Satellite">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                <span id="mapTypeText">Satellite View</span>
+              </button>
+              <button type="button" id="toggleHighlightBtn" class="gmap-btn-pill active" title="Toggle Service Area Highlight">
+                <span class="pill-dot"></span>
+                <span id="toggleHighlightText">Highlight: ON</span>
+              </button>
+              <a href="https://maps.google.com/?q=Los+Angeles+to+Irvine,+CA" target="_blank" rel="noopener noreferrer" class="gmap-btn-pill" title="Open Google Maps search">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                <span>Google Maps</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="gmap-embed-container">
+            <!-- Leaflet Container Loaded with Live Google Maps Tiles -->
+            <div id="serviceMap" class="service-map-leaflet"></div>
+          </div>
+        </div>
+
+        <!-- Right: Neighborhood Coverage Details & Quick Checker -->
+        <div class="map-sidebar-card">
+          <div class="map-info-box">
+            <h3 class="map-info-title">Service Area Coverage</h3>
+            <p class="map-info-desc">
+              The highlighted perimeter represents our daily service territory, bounded naturally between the Pacific coastline and the inland mountain ranges.
+            </p>
+
+            <ul class="service-highlights-list">
+              <li class="service-hl-item">
+                <div class="service-hl-icon">🚗</div>
+                <div class="service-hl-text">
+                  <strong>Zero Travel Surcharges</strong>
+                  <span>Flat, transparent local pricing everywhere inside the highlighted LA-to-Irvine corridor.</span>
+                </div>
+              </li>
+              <li class="service-hl-item">
+                <div class="service-hl-icon">⏱️</div>
+                <div class="service-hl-text">
+                  <strong>24-48 Hour On-Site Walkthroughs</strong>
+                  <span>Prompt local scheduling for detailed written proposals, color matching, and custom wood stain samples.</span>
+                </div>
+              </li>
+              <li class="service-hl-item">
+                <div class="service-hl-icon">🌊</div>
+                <div class="service-hl-text">
+                  <strong>Marine & Valley Climate Protection</strong>
+                  <span>Specialized exterior coatings and stains formulated to resist salt air, fog, UV exposure, and intense heat.</span>
+                </div>
+              </li>
+            </ul>
+
+            <!-- Interactive Zip / City Checker -->
+            <div class="coverage-checker-box">
+              <div class="coverage-checker-title">
+                <span>📍</span>
+                <span>Check Your Neighborhood</span>
+              </div>
+              <div class="coverage-input-group">
+                <input type="text" id="coverageInput" class="coverage-input" placeholder="Enter Zip or City (e.g. Irvine, 90266, 92618, Santa Monica)...">
+                <button type="button" id="coverageCheckBtn" class="coverage-btn">Check</button>
+              </div>
+              <div id="coverageResult" class="coverage-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       CONTACT & FREE CONSULTATION SECTION
+       ========================================================================== -->
+  <section class="section section-alt" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Get In Touch</span>
+        <h2 class="section-title">Request Your Free South Bay Estimate</h2>
+        <p class="section-desc">
+          Contact us today to schedule an on-site walkthrough. We provide detailed written proposals with upfront pricing and zero hidden fees.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+        <!-- Contact Info Box -->
+        <div class="contact-info-card">
+          <h3 style="font-size: 1.4rem; margin-bottom: 24px;">Direct Contact</h3>
+
+          <div class="contact-detail-row">
+            <div class="contact-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Call or Text Directly</strong>
+              <a href="tel:3104189598" class="contact-detail-link">310-418-9598</a>
+            </div>
+          </div>
+
+          <div class="contact-detail-row">
+            <div class="contact-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Email Us</strong>
+              <a href="mailto:renacerpaint@gmail.com" class="contact-detail-link">renacerpaint@gmail.com</a>
+            </div>
+          </div>
+
+          <div class="contact-detail-row">
+            <div class="contact-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Primary Service Area</strong>
+              <span style="font-size: 1rem; color: var(--text-heading); font-weight: 600;">South Bay Region, California</span>
+            </div>
+          </div>
+
+          <div class="contact-detail-row">
+            <div class="contact-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+            </div>
+            <div>
+              <strong>Working Hours</strong>
+              <span style="font-size: 0.95rem; color: var(--text-muted); display: block;">Monday – Saturday: 7:00 AM – 6:00 PM</span>
+              <span style="font-size: 0.95rem; color: var(--text-muted); display: block;">Sunday: By Appointment</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consultation Form -->
+        <div class="contact-form-card">
+          <h3 style="font-size: 1.4rem; margin-bottom: 20px;">Send a Message</h3>
+          <form id="quoteForm">
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="formName">Full Name *</label>
+                <input type="text" id="formName" class="form-control" placeholder="e.g. John Miller" required>
+              </div>
+              <div class="form-group">
+                <label for="formPhone">Phone Number *</label>
+                <input type="tel" id="formPhone" class="form-control" placeholder="e.g. 310-555-0199" required>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="formEmail">Email Address</label>
+                <input type="email" id="formEmail" class="form-control" placeholder="e.g. john@example.com">
+              </div>
+              <div class="form-group">
+                <label for="formCity">Your South Bay City</label>
+                <select id="formCity" class="form-control">
+                  <option value="Manhattan Beach">Manhattan Beach</option>
+                  <option value="Hermosa Beach">Hermosa Beach</option>
+                  <option value="Redondo Beach">Redondo Beach</option>
+                  <option value="Torrance">Torrance</option>
+                  <option value="Palos Verdes">Palos Verdes Estates / RPV</option>
+                  <option value="El Segundo">El Segundo</option>
+                  <option value="Rolling Hills">Rolling Hills</option>
+                  <option value="San Pedro">San Pedro</option>
+                  <option value="Other South Bay">Other South Bay Location</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="formService">Specialty Service Needed</label>
+              <select id="formService" class="form-control">
+                <option value="interior">Interior Painting</option>
+                <option value="exterior">Exterior Painting</option>
+                <option value="cabinets">Finishing Stains & Lacquers (Cabinets / Woodwork)</option>
+                <option value="construction">General Construction & Remodeling</option>
+                <option value="multiple">Multiple / Full Home Remodel</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="formNotes">Project Details & Questions</label>
+              <textarea id="formNotes" class="form-control" placeholder="Tell us about your project, timeline, rooms, or surfaces..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%;">
+              <span>Submit Estimate Request</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       INSTAGRAM MODAL LIGHTBOX
+       ========================================================================== -->
+  <div class="ig-modal-backdrop" id="instagramModal">
+    <div class="ig-modal-box">
+      <button class="ig-modal-close" id="modalCloseBtn" aria-label="Close modal">&times;</button>
+      <div class="ig-modal-media">
+        <img id="modalImage" src="" alt="Renacer Painting Instagram Post">
+      </div>
+      <div class="ig-modal-content">
+        <div>
+          <div class="ig-profile-info" style="margin-bottom: 16px;">
+            <div class="ig-avatar-ring" style="width: 48px; height: 48px;">
+              <img src="assets/images/logo.png" alt="Renacer Logo" class="ig-avatar-img">
+            </div>
+            <div class="ig-meta">
+              <div class="ig-handle-row">
+                <span class="ig-handle" style="font-size: 1rem;">@renacerpaint</span>
+                <span class="ig-badge-verified">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </span>
+              </div>
+              <span id="modalLocation" style="font-size: 0.78rem; color: var(--text-muted);">South Bay, CA</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <span id="modalCategory" class="ig-category-pill" style="display: inline-block;">Category</span>
+          </div>
+
+          <p id="modalCaption" style="font-size: 0.92rem; color: var(--text-main); line-height: 1.6; margin-bottom: 20px;">
+            Caption placeholder
+          </p>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 14px; margin-bottom: 16px;">
+            <strong id="modalLikes" style="font-size: 0.95rem; color: var(--text-heading);">245 likes</strong>
+            <span id="modalDate" style="font-size: 0.8rem; color: var(--text-muted);">2 days ago</span>
+          </div>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; text-align: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span>View & Comment on Instagram</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="brand-logo-wrap" style="margin-bottom: 20px;">
+          <div class="brand-logo-circle">
+            <img src="assets/images/logo.png" alt="Renacer Painting" class="brand-logo-img">
+          </div>
+          <div class="brand-text-block">
+            <span class="brand-name">Renacer Painting</span>
+            <span class="brand-subline">Finishing & Construction</span>
+          </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
+          Premier South Bay contractor specializing in interior & exterior painting, artisanal stains and lacquers, and general construction.
+        </p>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <a href="tel:3104189598" style="font-weight: 700; color: var(--accent-primary);">📞 (310) 418-9598</a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="footer-col-title">Services</h4>
+        <ul class="footer-links">
+          <li><a href="#services">Interior Painting</a></li>
+          <li><a href="#services">Exterior Painting</a></li>
+          <li><a href="#services">Finishing Stains & Lacquers</a></li>
+          <li><a href="#services">General Construction</a></li>
+          <li><a href="#services">Cabinet Refinishing</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-col-title">South Bay Service</h4>
+        <ul class="footer-links">
+          <li><a href="#service-area">Manhattan Beach</a></li>
+          <li><a href="#service-area">Hermosa Beach</a></li>
+          <li><a href="#service-area">Redondo Beach</a></li>
+          <li><a href="#service-area">Torrance</a></li>
+          <li><a href="#service-area">Palos Verdes</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-col-title">Connect</h4>
+        <ul class="footer-links">
+          <li><a href="tel:3104189598">310-418-9598</a></li>
+          <li><a href="mailto:renacerpaint@gmail.com">renacerpaint@gmail.com</a></li>
+          <li><a href="#gallery">@renacerpaint Instagram</a></li>
+          <li><a href="#service-area">Service Area Map</a></li>
+          <li><a href="#contact">Request Consult</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <div>
+        &copy; 2026 Renacer Painting. All Rights Reserved. South Bay, California.
+      </div>
+      <div>
+        Designed for presentation to Renacer Painting. Switch between 3 interactive styles in top-right.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MOBILE FLOATING STICKY ACTION BAR
+       ========================================================================== -->
+  <div class="mobile-sticky-bar">
+    <a href="tel:3104189598" class="btn-primary" style="flex: 1; padding: 10px; font-size: 0.9rem;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+      </svg>
+      <span>Call (310) 418-9598</span>
+    </a>
+    <a href="#contact" class="btn-secondary" style="flex: 1; padding: 10px; font-size: 0.9rem; text-align: center;">
+      <span>Get Free Quote</span>
+    </a>
+  </div>
+
+  <!-- Leaflet JS for Google Maps Integration -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
